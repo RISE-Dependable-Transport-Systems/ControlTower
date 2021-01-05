@@ -35,8 +35,6 @@ if(ANDROID)
     mainwindow.ui
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
-    sdvp_qtcommon/carstate.cpp
-    sdvp_qtcommon/carstate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
     sdvp_qtcommon/mapwidget.cpp
@@ -56,8 +54,6 @@ else()
     mainwindow.ui
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
-    sdvp_qtcommon/carstate.cpp
-    sdvp_qtcommon/carstate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
     sdvp_qtcommon/mapwidget.cpp
