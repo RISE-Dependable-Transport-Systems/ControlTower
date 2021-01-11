@@ -4,7 +4,7 @@
 #include <QMainWindow>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
-#include "sdvp_qtcommon/copterstate.h"
+#include "mavsdksystemconnector.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -20,10 +20,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QSharedPointer<CopterState> mCopterState;
     mavsdk::Mavsdk mMavsdk;
-    std::shared_ptr<mavsdk::System> mSystem;
-    std::shared_ptr<mavsdk::Telemetry> mTelemetry;
+    QSharedPointer<MavsdkSystemConnector> mMavsdkSystemConnector;
 
     void newMavsdkSystem();
 };
