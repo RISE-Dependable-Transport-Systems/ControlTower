@@ -19,7 +19,7 @@ public:
 
     // MapModule interface
     void processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale);
-    bool processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, bool ctrl, bool shift, bool ctrlShift, bool leftButton, bool rightButton, double scale);
+    bool processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale);
 
 private:
     // TODO try to clean up pointer type mess...

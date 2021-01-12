@@ -45,6 +45,10 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
         mCopterState->setVelocity(velocityCopter);
     });
 
+    mTelemetry->subscribe_landed_state([this](mavsdk::Telemetry::LandedState landedState) {
+       mCopterState->setLandedState(static_cast<CopterState::LandedState>(landedState));
+    });
+
     // Set up action plugin
     mAction.reset(new mavsdk::Action(mSystem));
 }
@@ -61,22 +65,22 @@ void MavsdkSystemConnector::processPaint(QPainter &painter, int width, int heigh
 
 }
 
-bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, bool ctrl, bool shift, bool ctrlShift, bool leftButton, bool rightButton, double scale)
+bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale)
 {
     Q_UNUSED(isRelease);
     Q_UNUSED(isMove);
     Q_UNUSED(isWheel);
     Q_UNUSED(widgetPos);
     Q_UNUSED(wheelAngleDelta);
-    Q_UNUSED(ctrl);
-    Q_UNUSED(shift);
-    Q_UNUSED(ctrlShift);
-    Q_UNUSED(leftButton);
-    Q_UNUSED(rightButton);
+    Q_UNUSED(keyboardModifiers);
+    Q_UNUSED(mouseButtons);
     Q_UNUSED(scale);
 
-    // TODO: quick test, no sanity checks etc.
-    if (isPress) {
+    bool eventWasHandled = false;
+
+    // TODO: quick test, no sanity checks, result handling etc.
+    if (isPress && keyboardModifiers == (Qt::ControlModifier | Qt::AltModifier)) {
+        if (mouseButtons == Qt::MouseButton::LeftButton) {
         double Llh[3];
 
         double iLlh[3];
@@ -86,8 +90,18 @@ bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMo
         MapWidget::enuToLlh(iLlh, xyz, Llh);
 
 
-        qDebug() << Llh[0] << Llh[1] <<  Llh[2];
-        mAction->goto_location_async(Llh[0], Llh[1], Llh[2], 0, [](mavsdk::Action::Result result){});
+        // qDebug() << Llh[0] << Llh[1] <<  Llh[2];
+
+        if (mCopterState->getLandedState() != CopterState::LandedState::InAir) {
+            mAction->arm_async([](mavsdk::Action::Result ){});
+            mAction->takeoff_async([](mavsdk::Action::Result ){});
+        } else
+            mAction->goto_location_async(Llh[0], Llh[1], Llh[2], 0, [](mavsdk::Action::Result ){});
+
+        eventWasHandled = true;
+        } else if (mouseButtons == Qt::MouseButton::MiddleButton)
+            mAction->land_async([](mavsdk::Action::Result ){});
     }
 
+    return eventWasHandled;
 }
