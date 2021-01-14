@@ -24,7 +24,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #    endif()
 #endif()
 
-find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort REQUIRED)
 find_package(MAVSDK REQUIRED)
 
 if(ANDROID)
@@ -47,6 +47,13 @@ if(ANDROID)
     sdvp_qtcommon/osmtile.h
     sdvp_qtcommon/pospoint.cpp
     sdvp_qtcommon/pospoint.h
+    sdvp_qtcommon/gnss/coordinate_transforms.h
+    sdvp_qtcommon/gnss/rtcm3_simple.cpp
+    sdvp_qtcommon/gnss/rtcm3_simple.h
+    sdvp_qtcommon/gnss/ublox.cpp
+    sdvp_qtcommon/gnss/ublox.h
+    sdvp_qtcommon/gnss/ublox_basestation.cpp
+    sdvp_qtcommon/gnss/ublox_basestation.h
   )
 else()
   add_executable(DroneCtrl
@@ -68,6 +75,13 @@ else()
     sdvp_qtcommon/osmtile.h
     sdvp_qtcommon/pospoint.cpp
     sdvp_qtcommon/pospoint.h
+    sdvp_qtcommon/gnss/coordinate_transforms.h
+    sdvp_qtcommon/gnss/rtcm3_simple.cpp
+    sdvp_qtcommon/gnss/rtcm3_simple.h
+    sdvp_qtcommon/gnss/ublox.cpp
+    sdvp_qtcommon/gnss/ublox.h
+    sdvp_qtcommon/gnss/ublox_basestation.cpp
+    sdvp_qtcommon/gnss/ublox_basestation.h
   )
 endif()
 
@@ -75,7 +89,9 @@ target_link_libraries(DroneCtrl
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Network
     PRIVATE Qt5::PrintSupport
+    PRIVATE Qt5::SerialPort
     PRIVATE MAVSDK::mavsdk_telemetry
     PRIVATE MAVSDK::mavsdk_action
+    PRIVATE MAVSDK::mavsdk_mavlink_passthrough
     PRIVATE MAVSDK::mavsdk
 )

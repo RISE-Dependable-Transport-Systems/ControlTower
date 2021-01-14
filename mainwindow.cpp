@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
+#include <QSerialPort>
 #include "sdvp_qtcommon/pospoint.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -24,9 +25,32 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() << "Failed to connect.";
         exit(1);
     }
-
     qDebug() << "Waiting to discover system..." ;
-}
+
+    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+    foreach(const QSerialPortInfo &portInfo, ports) {
+        if (portInfo.manufacturer().toLower().replace("-", "").contains("ublox")) {
+            mUbloxBasestation.connectSerial(portInfo);
+            qDebug() << "Connected to:" << portInfo.systemLocation();
+        }
+    }
+
+    // TODO: how should the connection between basestation and mavsdksystemconnector look like?
+    connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, this, [this](const double& refLat, const double& refLon, const double& refHeight){
+        qDebug() << "Baseposition: " << refLat << refLon << refHeight;
+
+//        double Llh[3] = {refLat, refLon, refHeight};
+
+//        double iLlh[3];
+//        ui->mapWidget->getEnuRef(iLlh);
+
+//        double xyz[3];
+//        MapWidget::llhToEnu(iLlh, Llh, xyz);
+
+//        PosPoint basePos = PosPoint(xyz[0], xyz[1], xyz[2]);
+//        ui->mapWidget->addInfoPoint(basePos);
+        //ui->mapWidget->setEnuRef(refLat, refLon, refHeight);
+    });}
 
 MainWindow::~MainWindow()
 {
@@ -35,6 +59,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::newMavsdkSystem()
 {
-    // TODO assumes only one system exists
+    // Note: assumes only one system exists
     mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget));
+    // Make sure direct connection is used, i.e., slot is called directly like function. Problems with threading otherwise
+    connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem, Qt::DirectConnection);
 }

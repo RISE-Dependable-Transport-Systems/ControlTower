@@ -35,6 +35,7 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
         mCopterState->setPosition(pos);
     });
 
+// TODO: make optional (set ENU from basestation, if connected)
     mTelemetry->subscribe_home([this](mavsdk::Telemetry::Position position) {
         mMap->setEnuRef(position.latitude_deg, position.longitude_deg, position.absolute_altitude_m);
         mMap->setTraceVehicle(0);
@@ -51,6 +52,9 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
 
     // Set up action plugin
     mAction.reset(new mavsdk::Action(mSystem));
+
+    // Set up MAVLINK passthrough to send rtcm data to drone (no plugin exists for this in MAVSDK v0.35.1)
+    mMavlinkPassthrough.reset(new mavsdk::MavlinkPassthrough(mSystem));
 }
 
 void MavsdkSystemConnector::processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale)
@@ -62,7 +66,6 @@ void MavsdkSystemConnector::processPaint(QPainter &painter, int width, int heigh
     Q_UNUSED(drawTrans);
     Q_UNUSED(txtTrans);
     Q_UNUSED(scale);
-
 }
 
 bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale)
@@ -104,4 +107,30 @@ bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMo
     }
 
     return eventWasHandled;
+}
+
+void MavsdkSystemConnector::forwardRtcmDataToSystem(const QByteArray &data, const int& type)
+{
+    Q_UNUSED(type);
+    // TODO: not tested whether a real drone can get an RTK fix this way.
+
+    if (mMavlinkPassthrough == nullptr)
+        return;
+
+    if (data.length() > MAVLINK_MSG_ID_GPS_RTCM_DATA_LEN) {
+        qDebug() << "WARNING: unable to send rtcm" << type << "via MAVLINK, too big with" << data.length() << "bytes. Discarded.";
+        return;
+    }
+
+    mavlink_gps_rtcm_data_t mavRtcmData;
+    mavRtcmData.flags = 0u;
+    mavRtcmData.len = data.length();
+    std::copy(data.begin(), data.end(), std::begin(mavRtcmData.data));
+    std::fill(std::begin(mavRtcmData.data) + mavRtcmData.len, std::end(mavRtcmData.data), 0);
+
+    mavlink_message_t mavRtcmMsg;
+    mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_our_sysid(), mMavlinkPassthrough->get_our_compid() /* TODO -> 220? */, &mavRtcmMsg, &mavRtcmData);
+
+    if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
+        qDebug() << "ERROR while forwarding rtcm via MAVLINK.";
 }

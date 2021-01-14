@@ -14,13 +14,9 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout_2">
+   <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="MapWidget" name="mapWidget" native="true"/>
-      </item>
-     </layout>
+     <widget class="MapWidget" name="mapWidget" native="true"/>
     </item>
    </layout>
   </widget>

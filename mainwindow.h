@@ -5,6 +5,7 @@
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include "mavsdksystemconnector.h"
+#include "sdvp_qtcommon/gnss/ublox_basestation.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,6 +23,7 @@ private:
     Ui::MainWindow *ui;
     mavsdk::Mavsdk mMavsdk;
     QSharedPointer<MavsdkSystemConnector> mMavsdkSystemConnector;
+    UbloxBasestation mUbloxBasestation;
 
     void newMavsdkSystem();
 };
