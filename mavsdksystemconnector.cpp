@@ -8,7 +8,6 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
 
     mCopterState->setName("Copter " + QString::number(mSystem->get_system_id()));
     mMap->addVehicle(mCopterState);
-    mMap->addMapModule(QSharedPointer<MapModule>(this));
 
     // Set up telemetry plugin
     mTelemetry.reset(new mavsdk::Telemetry(mSystem));

@@ -61,6 +61,8 @@ void MainWindow::newMavsdkSystem()
 {
     // Note: assumes only one system exists
     mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget));
-    // Make sure direct connection is used, i.e., slot is called directly like function. Problems with threading otherwise
+    // Make sure direct connection is used, i.e., slot is called directly like a function. Problems with threading otherwise.
     connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem, Qt::DirectConnection);
+    // Make system visible on the map
+    ui->mapWidget->addMapModule(mMavsdkSystemConnector);
 }
