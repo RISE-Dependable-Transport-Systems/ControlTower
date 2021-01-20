@@ -1,29 +1,24 @@
 #include "mavsdksystemconnector.h"
 
-MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, MapWidget *map)
+MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, llh_t const *enuReference)
 {
     mSystem = system;
-    mMap = map;
+    mEnuReference = enuReference;
     mCopterState.reset(new CopterState);
 
     mCopterState->setName("Copter " + QString::number(mSystem->get_system_id()));
-    mMap->addVehicle(mCopterState);
 
     // Set up telemetry plugin
     mTelemetry.reset(new mavsdk::Telemetry(mSystem));
 
     mTelemetry->subscribe_position([this](mavsdk::Telemetry::Position position) {
-        double Llh[3] = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
+        llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
 
-        double iLlh[3];
-        mMap->getEnuRef(iLlh);
-
-        double xyz[3];
-        MapWidget::llhToEnu(iLlh, Llh, xyz);
+        xyz_t xyz = coordinateTransforms::llhToEnu(*mEnuReference, llh);
 
         auto pos = mCopterState->getPosition();
-        pos.setX(xyz[0]);
-        pos.setY(xyz[1]);
+        pos.setX(xyz.x);
+        pos.setY(xyz.y);
         pos.setHeight(position.relative_altitude_m);
         mCopterState->setPosition(pos);
     });
@@ -34,10 +29,8 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
         mCopterState->setPosition(pos);
     });
 
-// TODO: make optional (set ENU from basestation, if connected)
     mTelemetry->subscribe_home([this](mavsdk::Telemetry::Position position) {
-        mMap->setEnuRef(position.latitude_deg, position.longitude_deg, position.absolute_altitude_m);
-        mMap->setTraceVehicle(0);
+        emit systemHomeLlh({position.latitude_deg, position.longitude_deg, position.absolute_altitude_m});
     });
 
     mTelemetry->subscribe_velocity_ned([this](mavsdk::Telemetry::VelocityNed velocity) {
@@ -83,24 +76,18 @@ bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMo
     // TODO: quick test, no sanity checks, result handling etc.
     if (isPress && keyboardModifiers == (Qt::ControlModifier | Qt::AltModifier)) {
         if (mouseButtons == Qt::MouseButton::LeftButton) {
-        double Llh[3];
+            xyz_t xyz = {mapPos.getX(), mapPos.getY(), mCopterState->getPosition().getHeight()};
+            llh_t llh = coordinateTransforms::enuToLlh(*mEnuReference, xyz);
 
-        double iLlh[3];
-        mMap->getEnuRef(iLlh);
+            qDebug() << llh.latitude << llh.longitude << llh.height;
 
-        double xyz[3] = {mapPos.getX(), mapPos.getY(), mCopterState->getPosition().getHeight()};
-        MapWidget::enuToLlh(iLlh, xyz, Llh);
+            if (mCopterState->getLandedState() != CopterState::LandedState::InAir) {
+                mAction->arm_async([](mavsdk::Action::Result ){});
+                mAction->takeoff_async([](mavsdk::Action::Result ){});
+            } else
+                mAction->goto_location_async(llh.latitude, llh.longitude, llh.height, 0, [](mavsdk::Action::Result ){});
 
-
-        // qDebug() << Llh[0] << Llh[1] <<  Llh[2];
-
-        if (mCopterState->getLandedState() != CopterState::LandedState::InAir) {
-            mAction->arm_async([](mavsdk::Action::Result ){});
-            mAction->takeoff_async([](mavsdk::Action::Result ){});
-        } else
-            mAction->goto_location_async(Llh[0], Llh[1], Llh[2], 0, [](mavsdk::Action::Result ){});
-
-        eventWasHandled = true;
+            eventWasHandled = true;
         } else if (mouseButtons == Qt::MouseButton::MiddleButton)
             mAction->land_async([](mavsdk::Action::Result ){});
     }
@@ -132,4 +119,9 @@ void MavsdkSystemConnector::forwardRtcmDataToSystem(const QByteArray &data, cons
 
     if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
         qDebug() << "ERROR while forwarding rtcm via MAVLINK.";
+}
+
+QSharedPointer<CopterState> MavsdkSystemConnector::getCopterState() const
+{
+    return mCopterState;
 }

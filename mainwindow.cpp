@@ -34,23 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
             qDebug() << "Connected to:" << portInfo.systemLocation();
         }
     }
-
-    // TODO: how should the connection between basestation and mavsdksystemconnector look like?
-    connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, this, [this](const double& refLat, const double& refLon, const double& refHeight){
-        qDebug() << "Baseposition: " << refLat << refLon << refHeight;
-
-//        double Llh[3] = {refLat, refLon, refHeight};
-
-//        double iLlh[3];
-//        ui->mapWidget->getEnuRef(iLlh);
-
-//        double xyz[3];
-//        MapWidget::llhToEnu(iLlh, Llh, xyz);
-
-//        PosPoint basePos = PosPoint(xyz[0], xyz[1], xyz[2]);
-//        ui->mapWidget->addInfoPoint(basePos);
-        //ui->mapWidget->setEnuRef(refLat, refLon, refHeight);
-    });}
+}
 
 MainWindow::~MainWindow()
 {
@@ -60,9 +44,19 @@ MainWindow::~MainWindow()
 void MainWindow::newMavsdkSystem()
 {
     // Note: assumes only one system exists
-    mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget));
+    mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget->getEnuRef_Ptr()));
+
     // Make sure direct connection is used, i.e., slot is called directly like a function. Problems with threading otherwise.
     connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem, Qt::DirectConnection);
-    // Make system visible on the map
+
+    if (mUbloxBasestation.isSerialConnected())
+        // Base position = ENU reference
+        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef, Qt::DirectConnection);
+    else
+        // System home = ENU reference
+        connect(mMavsdkSystemConnector.get(), &MavsdkSystemConnector::systemHomeLlh, ui->mapWidget, &MapWidget::setEnuRef, Qt::DirectConnection);
+
+    // Register system as receiver of input events from map and make copter visible on map
     ui->mapWidget->addMapModule(mMavsdkSystemConnector);
+    ui->mapWidget->addVehicle(mMavsdkSystemConnector->getCopterState());
 }

@@ -39,6 +39,7 @@ if(ANDROID)
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
+    sdvp_qtcommon/coordinatetransforms.h
     sdvp_qtcommon/mapwidget.cpp
     sdvp_qtcommon/mapwidget.h
     sdvp_qtcommon/osmclient.cpp
@@ -47,7 +48,6 @@ if(ANDROID)
     sdvp_qtcommon/osmtile.h
     sdvp_qtcommon/pospoint.cpp
     sdvp_qtcommon/pospoint.h
-    sdvp_qtcommon/gnss/coordinate_transforms.h
     sdvp_qtcommon/gnss/rtcm3_simple.cpp
     sdvp_qtcommon/gnss/rtcm3_simple.h
     sdvp_qtcommon/gnss/ublox.cpp
@@ -67,6 +67,7 @@ else()
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
+    sdvp_qtcommon/coordinatetransforms.h
     sdvp_qtcommon/mapwidget.cpp
     sdvp_qtcommon/mapwidget.h
     sdvp_qtcommon/osmclient.cpp
@@ -75,7 +76,6 @@ else()
     sdvp_qtcommon/osmtile.h
     sdvp_qtcommon/pospoint.cpp
     sdvp_qtcommon/pospoint.h
-    sdvp_qtcommon/gnss/coordinate_transforms.h
     sdvp_qtcommon/gnss/rtcm3_simple.cpp
     sdvp_qtcommon/gnss/rtcm3_simple.h
     sdvp_qtcommon/gnss/ublox.cpp
