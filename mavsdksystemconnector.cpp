@@ -13,13 +13,13 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
 
     mTelemetry->subscribe_position([this](mavsdk::Telemetry::Position position) {
         llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
-
         xyz_t xyz = coordinateTransforms::llhToEnu(*mEnuReference, llh);
 
         auto pos = mCopterState->getPosition();
         pos.setX(xyz.x);
         pos.setY(xyz.y);
-        pos.setHeight(position.relative_altitude_m);
+        pos.setHeight(xyz.z);
+
         mCopterState->setPosition(pos);
     });
 
@@ -30,6 +30,15 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
     });
 
     mTelemetry->subscribe_home([this](mavsdk::Telemetry::Position position) {
+        llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
+        xyz_t xyz = coordinateTransforms::llhToEnu(*mEnuReference, llh);
+
+        auto homePos = mCopterState->getHomePosition();
+        homePos.setX(xyz.x);
+        homePos.setY(xyz.y);
+        homePos.setHeight(xyz.z);
+        mCopterState->setHomePosition(homePos);
+
         emit systemHomeLlh({position.latitude_deg, position.longitude_deg, position.absolute_altitude_m});
     });
 
@@ -78,8 +87,6 @@ bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMo
         if (mouseButtons == Qt::MouseButton::LeftButton) {
             xyz_t xyz = {mapPos.getX(), mapPos.getY(), mCopterState->getPosition().getHeight()};
             llh_t llh = coordinateTransforms::enuToLlh(*mEnuReference, xyz);
-
-            qDebug() << llh.latitude << llh.longitude << llh.height;
 
             if (mCopterState->getLandedState() != CopterState::LandedState::InAir) {
                 mAction->arm_async([](mavsdk::Action::Result ){});
