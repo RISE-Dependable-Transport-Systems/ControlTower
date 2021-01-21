@@ -55,6 +55,7 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
     mAction.reset(new mavsdk::Action(mSystem));
 
     // Set up MAVLINK passthrough to send rtcm data to drone (no plugin exists for this in MAVSDK v0.35.1)
+    // TODO: use to set home position on system?
     mMavlinkPassthrough.reset(new mavsdk::MavlinkPassthrough(mSystem));
 }
 
@@ -106,6 +107,8 @@ void MavsdkSystemConnector::forwardRtcmDataToSystem(const QByteArray &data, cons
 {
     Q_UNUSED(type);
     // TODO: not tested whether a real drone can get an RTK fix this way.
+    // TODO: needs adjustments and support for fragmented messages, see:
+    //       https://github.com/mavlink/qgroundcontrol/blob/aba881bf8e3f2fdbf63ef0689a3bf0432f597759/src/GPS/RTCM/RTCMMavlink.cc#L24
 
     if (mMavlinkPassthrough == nullptr)
         return;
