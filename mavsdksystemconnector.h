@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QWidget>
+#include <QTimer>
+#include <QThread>
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/action/action.h>
@@ -31,12 +33,16 @@ signals:
     void systemHomeLlh(const llh_t &homePositionLlh);
 
 private:
+    void posTimeout();
+
     llh_t const *mEnuReference;
     QSharedPointer<CopterState> mCopterState;
     std::shared_ptr<mavsdk::System> mSystem;
     std::shared_ptr<mavsdk::Telemetry> mTelemetry;
     std::shared_ptr<mavsdk::Action> mAction;
     std::shared_ptr<mavsdk::MavlinkPassthrough> mMavlinkPassthrough;
+    std::shared_ptr<QThread> mTimerThread;
+    std::shared_ptr<QTimer> mPosTimer;
 };
 
 #endif // MAVSDKSYSTEMCONNECTOR_H

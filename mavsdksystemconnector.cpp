@@ -6,6 +6,14 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
     mEnuReference = enuReference;
     mCopterState.reset(new CopterState);
 
+    mTimerThread.reset(new QThread(this));
+    mPosTimer.reset(new QTimer(nullptr));
+    mPosTimer->setInterval(100);
+    mPosTimer->moveToThread(mTimerThread.get());
+    connect(mPosTimer.get(), &QTimer::timeout, this, &MavsdkSystemConnector::posTimeout, Qt::DirectConnection);
+    connect(mTimerThread.get(), &QThread::started, mPosTimer.get(), static_cast<void (QTimer::*)()>(&QTimer::start));
+    mTimerThread->start();
+
     mCopterState->setName("Copter " + QString::number(mSystem->get_system_id()));
 
     // Set up telemetry plugin
@@ -134,4 +142,8 @@ void MavsdkSystemConnector::forwardRtcmDataToSystem(const QByteArray &data, cons
 QSharedPointer<CopterState> MavsdkSystemConnector::getCopterState() const
 {
     return mCopterState;
+}
+
+void MavsdkSystemConnector::posTimeout() {
+    qDebug() << "Hejsan!";
 }
