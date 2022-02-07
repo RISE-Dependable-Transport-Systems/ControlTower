@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->setDrawRouteText(false);
     ui->mapWidget->setScaleFactor(0.1);
 
-    ui->mapWidget->setSelectedVehicle(0);
+    ui->mapWidget->setSelectedObject(0);
 
     QString connection_url = "udp://:14540"; // TODO: currently hardcoded for use with simulator
     mavsdk::ConnectionResult connection_result;

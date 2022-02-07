@@ -35,6 +35,8 @@ if(ANDROID)
     mainwindow.ui
     mavsdksystemconnector.h
     mavsdksystemconnector.cpp
+    sdvp_qtcommon/objectstate.cpp
+    sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
@@ -63,6 +65,8 @@ else()
     mainwindow.ui
     mavsdksystemconnector.h
     mavsdksystemconnector.cpp
+    sdvp_qtcommon/objectstate.cpp
+    sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
