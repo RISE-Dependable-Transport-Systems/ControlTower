@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QSerialPort>
+#include <QThread>
 #include "sdvp_qtcommon/pospoint.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -9,22 +10,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->mapWidget->setScaleFactor(0.1);
-
     ui->mapWidget->setSelectedObjectState(0);
 
-    QString connection_url = "udp://:14540"; // TODO: currently hardcoded for use with simulator
-    mavsdk::ConnectionResult connection_result;
-
-    mMavsdk.subscribe_on_new_system([this](){newMavsdkSystem();});
-
-    connection_result = mMavsdk.add_any_connection(connection_url.toStdString());
-    if (connection_result == mavsdk::ConnectionResult::Success)
-        qDebug() << "Connected.";
-    else {
-        qDebug() << "Failed to connect.";
-        exit(1);
-    }
-    qDebug() << "Waiting to discover system..." ;
+    mMavsdkStation = QSharedPointer<MavsdkStation>::create();
+    mMavsdkStation->startListeningUDP();
 
     QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
     foreach(const QSerialPortInfo &portInfo, ports) {
@@ -33,35 +22,25 @@ MainWindow::MainWindow(QWidget *parent)
             qDebug() << "Connected to:" << portInfo.systemLocation();
         }
     }
+    if (mUbloxBasestation.isSerialConnected()) {
+        // Base position = ENU reference
+        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
+        connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData); // TODO: not fully implemented
+    }
+    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
+
+    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
+        if (!mUbloxBasestation.isSerialConnected())
+            // Vehicle home = ENU reference
+            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
+
+        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
+    });
 }
 
 MainWindow::~MainWindow()
 {
+    // Allow MAVSDK to finish
     thread()->msleep(10);
     delete ui;
-}
-
-void MainWindow::newMavsdkSystem()
-{
-    qDebug() << "Got system.";
-
-    // Note: assumes only one system exists
-    mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget->getEnuRef()));
-    // make sure to use QThread
-    mMavsdkSystemConnector->moveToThread(thread());
-
-    // Make sure direct connection is used, i.e., slot is called directly like a function. Problems with threading otherwise.
-    connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem);
-
-    if (mUbloxBasestation.isSerialConnected())
-        // Base position = ENU reference
-        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
-    else
-        // System home = ENU reference
-        connect(mMavsdkSystemConnector.get(), &MavsdkSystemConnector::systemHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
-    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::setEnuReference);
-
-    // Register system as receiver of input events from map and make copter visible on map
-    ui->mapWidget->addMapModule(mMavsdkSystemConnector);
-    ui->mapWidget->addObjectState(mMavsdkSystemConnector->getCopterState());
 }

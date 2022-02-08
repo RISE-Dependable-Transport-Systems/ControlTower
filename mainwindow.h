@@ -2,9 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
-#include "mavsdksystemconnector.h"
+#include "mavsdkstation.h"
 #include "sdvp_qtcommon/gnss/ublox_basestation.h"
 
 QT_BEGIN_NAMESPACE
@@ -21,8 +20,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    mavsdk::Mavsdk mMavsdk;
-    QSharedPointer<MavsdkSystemConnector> mMavsdkSystemConnector;
+    QSharedPointer<MavsdkStation> mMavsdkStation;
     UbloxBasestation mUbloxBasestation;
 
     void newMavsdkSystem();

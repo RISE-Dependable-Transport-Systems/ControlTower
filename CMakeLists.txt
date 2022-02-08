@@ -33,8 +33,10 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    mavsdksystemconnector.h
-    mavsdksystemconnector.cpp
+    mavsdkstation.h
+    mavsdkstation.cpp
+    mavsdkvehicleconnection.h
+    mavsdkvehicleconnection.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
@@ -63,8 +65,10 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    mavsdksystemconnector.h
-    mavsdksystemconnector.cpp
+    mavsdkstation.h
+    mavsdkstation.cpp
+    mavsdkvehicleconnection.h
+    mavsdkvehicleconnection.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
