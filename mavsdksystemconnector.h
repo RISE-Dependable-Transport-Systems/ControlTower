@@ -14,7 +14,7 @@
 #include "sdvp_qtcommon/coordinatetransforms.h"
 
 // Connects MAVSDK "System" to the SDVP Map. Positions are always handled in lat, lon, because GNSS RTK moving base is the main use case
-class MavsdkSystemConnector : public QWidget, public MapModule
+class MavsdkSystemConnector : public QObject, public MapModule
 {
     Q_OBJECT
 public:

@@ -37,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    thread()->msleep(10);
     delete ui;
 }
 
@@ -46,17 +47,19 @@ void MainWindow::newMavsdkSystem()
 
     // Note: assumes only one system exists
     mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget->getEnuRef()));
+    // make sure to use QThread
+    mMavsdkSystemConnector->moveToThread(thread());
 
     // Make sure direct connection is used, i.e., slot is called directly like a function. Problems with threading otherwise.
-    connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem, Qt::DirectConnection);
+    connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem);
 
     if (mUbloxBasestation.isSerialConnected())
         // Base position = ENU reference
-        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef, Qt::DirectConnection);
+        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
     else
         // System home = ENU reference
-        connect(mMavsdkSystemConnector.get(), &MavsdkSystemConnector::systemHomeLlh, ui->mapWidget, &MapWidget::setEnuRef, Qt::DirectConnection);
-    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::setEnuReference, Qt::DirectConnection);
+        connect(mMavsdkSystemConnector.get(), &MavsdkSystemConnector::systemHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
+    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::setEnuReference);
 
     // Register system as receiver of input events from map and make copter visible on map
     ui->mapWidget->addMapModule(mMavsdkSystemConnector);
