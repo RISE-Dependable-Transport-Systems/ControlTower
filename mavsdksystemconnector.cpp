@@ -1,6 +1,7 @@
 #include "mavsdksystemconnector.h"
+#include <QCoreApplication>
 
-MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, llh_t const *enuReference)
+MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, llh_t const enuReference)
 {
     mSystem = system;
     mEnuReference = enuReference;
@@ -21,7 +22,7 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
 
     mTelemetry->subscribe_position([this](mavsdk::Telemetry::Position position) {
         llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
-        xyz_t xyz = coordinateTransforms::llhToEnu(*mEnuReference, llh);
+        xyz_t xyz = coordinateTransforms::llhToEnu(mEnuReference, llh);
 
         auto pos = mCopterState->getPosition();
         pos.setX(xyz.x);
@@ -39,7 +40,7 @@ MavsdkSystemConnector::MavsdkSystemConnector(std::shared_ptr<mavsdk::System> sys
 
     mTelemetry->subscribe_home([this](mavsdk::Telemetry::Position position) {
         llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
-        xyz_t xyz = coordinateTransforms::llhToEnu(*mEnuReference, llh);
+        xyz_t xyz = coordinateTransforms::llhToEnu(mEnuReference, llh);
 
         auto homePos = mCopterState->getHomePosition();
         homePos.setX(xyz.x);
@@ -95,7 +96,7 @@ bool MavsdkSystemConnector::processMouse(bool isPress, bool isRelease, bool isMo
     if (isPress && keyboardModifiers == (Qt::ControlModifier | Qt::AltModifier)) {
         if (mouseButtons == Qt::MouseButton::LeftButton) {
             xyz_t xyz = {mapPos.getX(), mapPos.getY(), mCopterState->getPosition().getHeight()};
-            llh_t llh = coordinateTransforms::enuToLlh(*mEnuReference, xyz);
+            llh_t llh = coordinateTransforms::enuToLlh(mEnuReference, xyz);
 
             if (mCopterState->getLandedState() != CopterState::LandedState::InAir) {
                 mAction->arm_async([](mavsdk::Action::Result ){});
@@ -145,5 +146,16 @@ QSharedPointer<CopterState> MavsdkSystemConnector::getCopterState() const
 }
 
 void MavsdkSystemConnector::posTimeout() {
-    qDebug() << "Hejsan!";
+    // TODO: periodic pos requests
+    //qDebug() << "Hejsan!";
+}
+
+llh_t MavsdkSystemConnector::getEnuReference() const
+{
+    return mEnuReference;
+}
+
+void MavsdkSystemConnector::setEnuReference(const llh_t &enuReference)
+{
+    mEnuReference = enuReference;
 }

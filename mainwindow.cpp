@@ -8,10 +8,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    ui->mapWidget->setDrawRouteText(false);
     ui->mapWidget->setScaleFactor(0.1);
 
-    ui->mapWidget->setSelectedObject(0);
+    ui->mapWidget->setSelectedObjectState(0);
 
     QString connection_url = "udp://:14540"; // TODO: currently hardcoded for use with simulator
     mavsdk::ConnectionResult connection_result;
@@ -43,8 +42,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::newMavsdkSystem()
 {
+    qDebug() << "Got system.";
+
     // Note: assumes only one system exists
-    mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget->getEnuRef_Ptr()));
+    mMavsdkSystemConnector.reset(new MavsdkSystemConnector(mMavsdk.systems().at(0), ui->mapWidget->getEnuRef()));
 
     // Make sure direct connection is used, i.e., slot is called directly like a function. Problems with threading otherwise.
     connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::forwardRtcmDataToSystem, Qt::DirectConnection);
@@ -55,8 +56,9 @@ void MainWindow::newMavsdkSystem()
     else
         // System home = ENU reference
         connect(mMavsdkSystemConnector.get(), &MavsdkSystemConnector::systemHomeLlh, ui->mapWidget, &MapWidget::setEnuRef, Qt::DirectConnection);
+    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkSystemConnector.get(), &MavsdkSystemConnector::setEnuReference, Qt::DirectConnection);
 
     // Register system as receiver of input events from map and make copter visible on map
     ui->mapWidget->addMapModule(mMavsdkSystemConnector);
-    ui->mapWidget->addVehicle(mMavsdkSystemConnector->getCopterState());
+    ui->mapWidget->addObjectState(mMavsdkSystemConnector->getCopterState());
 }

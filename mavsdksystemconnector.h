@@ -19,7 +19,7 @@ class MavsdkSystemConnector : public QWidget, public MapModule
     Q_OBJECT
 public:
     MavsdkSystemConnector() = delete;
-    MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, llh_t const *enuReference);
+    MavsdkSystemConnector(std::shared_ptr<mavsdk::System> system, const llh_t enuReference);
 
     // MapModule interface
     void processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale);
@@ -29,13 +29,16 @@ public:
 
     QSharedPointer<CopterState> getCopterState() const;
 
+    llh_t getEnuReference() const;
+    void setEnuReference(const llh_t &enuReference);
+
 signals:
     void systemHomeLlh(const llh_t &homePositionLlh);
 
 private:
     void posTimeout();
 
-    llh_t const *mEnuReference;
+    llh_t mEnuReference;
     QSharedPointer<CopterState> mCopterState;
     std::shared_ptr<mavsdk::System> mSystem;
     std::shared_ptr<mavsdk::Telemetry> mTelemetry;
