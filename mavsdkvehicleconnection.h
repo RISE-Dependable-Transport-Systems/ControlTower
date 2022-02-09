@@ -20,6 +20,7 @@ public:
     void requestArm();
     void requestTakeoff();
     void requestGotoLlh(const llh_t &llh);
+    void requestGotoENU(const xyz_t &xyz, bool convertToGlobalBeforeSending = false);
 
 signals:
     void gotVehicleHomeLlh(const llh_t &homePositionLlh);

@@ -117,3 +117,13 @@ void MavsdkVehicleConnection::requestGotoLlh(const llh_t &llh)
             qDebug() << "Going to " << llh.latitude << llh.longitude << llh.height;
     });
 }
+
+void MavsdkVehicleConnection::requestGotoENU(const xyz_t &xyz, bool convertToGlobalBeforeSending)
+{
+    if (convertToGlobalBeforeSending) {
+        llh_t llh = coordinateTransforms::enuToLlh(mEnuReference, xyz);
+        requestGotoLlh(llh);
+    } else {
+        qDebug() << "MavsdkVehicleConnection::requestGotoENU: sending local coordinates to vehicle without converting not implemented.";
+    }
+}
