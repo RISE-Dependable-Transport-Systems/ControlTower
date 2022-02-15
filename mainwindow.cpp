@@ -30,11 +30,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
 
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
+        // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
+        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
+
         if (!mUbloxBasestation.isSerialConnected())
             // Vehicle home = ENU reference
             connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
+        ui->flyForm->setCurrentVehicleConnection(vehicleConnection);
     });
 }
 

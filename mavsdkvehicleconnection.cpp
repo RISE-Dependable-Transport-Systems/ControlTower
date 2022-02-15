@@ -24,6 +24,10 @@ MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System>
     // Set up telemetry plugin
     mTelemetry.reset(new mavsdk::Telemetry(mSystem));
 
+    mTelemetry->subscribe_armed([this](bool isArmed) {
+       mVehicleState->setIsArmed(isArmed);
+    });
+
     mTelemetry->subscribe_home([this](mavsdk::Telemetry::Position position) {
         llh_t llh = {position.latitude_deg, position.longitude_deg, position.absolute_altitude_m};
         xyz_t xyz = coordinateTransforms::llhToEnu(mEnuReference, llh);
@@ -87,11 +91,17 @@ void MavsdkVehicleConnection::setEnuReference(const llh_t &enuReference)
 
 void MavsdkVehicleConnection::requestArm()
 {
-    mAction->arm_async([this](mavsdk::Action::Result res){
+    mAction->arm_async([](mavsdk::Action::Result res){
         if (res != mavsdk::Action::Result::Success)
             qDebug() << "Warning: MavsdkVehicleConnection's arm request failed.";
-        else
-            mIsArmed = true;
+    });
+}
+
+void MavsdkVehicleConnection::requestDisarm()
+{
+    mAction->disarm_async([](mavsdk::Action::Result res){
+        if (res != mavsdk::Action::Result::Success)
+            qDebug() << "Warning: MavsdkVehicleConnection's disarm request failed.";
     });
 }
 
@@ -101,11 +111,31 @@ void MavsdkVehicleConnection::requestTakeoff()
         mAction->takeoff_async([](mavsdk::Action::Result res){
             if (res != mavsdk::Action::Result::Success)
                 qDebug() << "Warning: MavsdkVehicleConnection's takeoff request failed.";
-            else
-                qDebug() << "Taking off...";
         });
     } else
         qDebug() << "Warning: MavsdkVehicleConnection is trying to take off with an unknown/incompatible vehicle type, ignored.";
+}
+
+void MavsdkVehicleConnection::requestLanding()
+{
+    if (mVehicleType == MAV_TYPE::MAV_TYPE_QUADROTOR) {
+        mAction->land_async([](mavsdk::Action::Result res){
+            if (res != mavsdk::Action::Result::Success)
+                qDebug() << "Warning: MavsdkVehicleConnection's land request failed.";
+        });
+    } else
+        qDebug() << "Warning: MavsdkVehicleConnection is trying to land with an unknown/incompatible vehicle type, ignored.";
+}
+
+void MavsdkVehicleConnection::requestReturnToHome()
+{
+    if (mVehicleType == MAV_TYPE::MAV_TYPE_QUADROTOR) {
+        mAction->return_to_launch_async([](mavsdk::Action::Result res){
+            if (res != mavsdk::Action::Result::Success)
+                qDebug() << "Warning: MavsdkVehicleConnection's return to home request failed.";
+        });
+    } else
+        qDebug() << "Warning: MavsdkVehicleConnection is trying to land with an unknown/incompatible vehicle type, ignored.";
 }
 
 void MavsdkVehicleConnection::requestGotoLlh(const llh_t &llh)
@@ -113,17 +143,20 @@ void MavsdkVehicleConnection::requestGotoLlh(const llh_t &llh)
     mAction->goto_location_async(llh.latitude, llh.longitude, llh.height, 0, [&llh](mavsdk::Action::Result res){
         if (res != mavsdk::Action::Result::Success)
             qDebug() << "Warning: MavsdkVehicleConnection's goto request failed.";
-        else
-            qDebug() << "Going to " << llh.latitude << llh.longitude << llh.height;
     });
 }
 
-void MavsdkVehicleConnection::requestGotoENU(const xyz_t &xyz, bool convertToGlobalBeforeSending)
+void MavsdkVehicleConnection::requestGotoENU(const xyz_t &xyz)
 {
-    if (convertToGlobalBeforeSending) {
+    if (mConvertLocalPositionsToGlobalBeforeSending) {
         llh_t llh = coordinateTransforms::enuToLlh(mEnuReference, xyz);
         requestGotoLlh(llh);
     } else {
         qDebug() << "MavsdkVehicleConnection::requestGotoENU: sending local coordinates to vehicle without converting not implemented.";
     }
+}
+
+void MavsdkVehicleConnection::setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending)
+{
+    mConvertLocalPositionsToGlobalBeforeSending = convertLocalPositionsToGlobalBeforeSending;
 }

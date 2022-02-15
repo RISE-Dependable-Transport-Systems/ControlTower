@@ -18,9 +18,14 @@ public:
     QSharedPointer<VehicleState> getVehicleState() const;
     void setEnuReference(const llh_t &enuReference);
     void requestArm();
+    void requestDisarm();
     void requestTakeoff();
+    void requestLanding();
+    void requestReturnToHome();
     void requestGotoLlh(const llh_t &llh);
-    void requestGotoENU(const xyz_t &xyz, bool convertToGlobalBeforeSending = false);
+    void requestGotoENU(const xyz_t &xyz);
+
+    void setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending);
 
 signals:
     void gotVehicleHomeLlh(const llh_t &homePositionLlh);
@@ -28,14 +33,13 @@ signals:
 private:
     MAV_TYPE mVehicleType;
     llh_t mEnuReference;
+    bool mConvertLocalPositionsToGlobalBeforeSending = false;
     QSharedPointer<VehicleState> mVehicleState;
     std::shared_ptr<mavsdk::System> mSystem;
     std::shared_ptr<mavsdk::Telemetry> mTelemetry;
     std::shared_ptr<mavsdk::Action> mAction;
     std::shared_ptr<mavsdk::MavlinkPassthrough> mMavlinkPassthrough;
     QSharedPointer<QTimer> mPosTimer;
-    bool mIsArmed;
-
 };
 
 #endif // MAVSDKVEHICLECONNECTION_H

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(DroneCtrl LANGUAGES CXX)
+project(ControlTower LANGUAGES CXX)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -28,11 +28,14 @@ find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort REQUIRE
 find_package(MAVSDK REQUIRED)
 
 if(ANDROID)
-  add_library(DroneCtrl SHARED
+  add_library(ControlTower SHARED
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    flyform.cpp
+    flyform.h
+    flyform.ui
     mavsdkstation.h
     mavsdkstation.cpp
     mavsdkvehicleconnection.h
@@ -60,11 +63,14 @@ if(ANDROID)
     sdvp_qtcommon/gnss/ublox_basestation.h
   )
 else()
-  add_executable(DroneCtrl
+  add_executable(ControlTower
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    flyform.cpp
+    flyform.h
+    flyform.ui
     mavsdkstation.h
     mavsdkstation.cpp
     mavsdkvehicleconnection.h
@@ -93,7 +99,7 @@ else()
   )
 endif()
 
-target_link_libraries(DroneCtrl
+target_link_libraries(ControlTower
     PRIVATE Qt5::Widgets
     PRIVATE Qt5::Network
     PRIVATE Qt5::PrintSupport
