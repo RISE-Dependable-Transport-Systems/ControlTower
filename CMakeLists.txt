@@ -36,6 +36,8 @@ if(ANDROID)
     flyform.cpp
     flyform.h
     flyform.ui
+    routeplannermodule.cpp
+    routeplannermodule.h
     mavsdkstation.h
     mavsdkstation.cpp
     mavsdkvehicleconnection.h
@@ -71,6 +73,8 @@ else()
     flyform.cpp
     flyform.h
     flyform.ui
+    routeplannermodule.cpp
+    routeplannermodule.h
     mavsdkstation.h
     mavsdkstation.cpp
     mavsdkvehicleconnection.h

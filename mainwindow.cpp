@@ -4,6 +4,8 @@
 #include <QThread>
 #include "sdvp_qtcommon/pospoint.h"
 
+#include "routeplannermodule.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -11,6 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->mapWidget->setScaleFactor(0.1);
     ui->mapWidget->setSelectedObjectState(0);
+    QSharedPointer<RoutePlannerModule> mRoutePlanner = QSharedPointer<RoutePlannerModule>::create();
+    ui->mapWidget->addMapModule(mRoutePlanner);
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     mMavsdkStation->startListeningUDP();
