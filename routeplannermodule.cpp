@@ -45,11 +45,12 @@ void RoutePlannerModule::processPaint(QPainter &painter, int width, int height, 
     }
 }
 
-bool RoutePlannerModule::processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale)
+bool RoutePlannerModule::processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos,
+                                      double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale)
 {
-    bool ctrl = keyboardModifiers == Qt::ControlModifier;
-    bool shift = keyboardModifiers == Qt::ShiftModifier;
-    bool ctrl_shift = keyboardModifiers == (Qt::ControlModifier | Qt::ShiftModifier);
+    Q_UNUSED(isWheel)
+    Q_UNUSED(widgetPos)
+    Q_UNUSED(wheelAngleDelta)
 
 //    mousePosMap.setSpeed(mRoutePointSpeed);
 //    mousePosMap.setTime(mRoutePointTime);
@@ -58,43 +59,65 @@ bool RoutePlannerModule::processMouse(bool isPress, bool isRelease, bool isMove,
 //    mousePosMap.setHeight(mAnchorHeight);
 
     double routeDist = 0.0;
-    double anchorDist = 0.0;
-    int routeInd = getClosestPoint(mapPos, mRoutes[mPlannerState.currentRouteIndex], routeDist);
+    int pointOnCurrRouteInd = getClosestPoint(mapPos, mRoutes[mPlannerState.currentRouteIndex], routeDist);
     bool routeFound = (routeDist * scale * 1000.0) < 20 && routeDist >= 0.0;
 
-    if (ctrl) {
-        if (mouseButtons & Qt::LeftButton) {
+    if (isRelease) {
+        mPlannerState.currentPointIndex = -1;
+        return false;
+    }
 
-        } else if (mouseButtons & Qt::RightButton) {
-            if (routeFound) {
-//                mRoutes[mRouteNow][routeInd].setSpeed(mRoutePointSpeed);
-//                mRoutes[mRouteNow][routeInd].setTime(mRoutePointTime);
-//                mRoutes[mRouteNow][routeInd].setAttributes(mRoutePointAttributes);
-            }
+    if (isMove) {
+        if (mPlannerState.currentPointIndex >= 0) {
+            mRoutes[mPlannerState.currentRouteIndex][mPlannerState.currentPointIndex].setXY(mapPos.getX(), mapPos.getY());
+            emit requestRepaint();
+            return true;
         }
-    } else if (shift) {
-        if (mouseButtons & Qt::LeftButton) {
-            if (routeFound) {
-//                mRoutePointSelected = routeInd;
-                mRoutes[mPlannerState.currentRouteIndex][routeInd].setXY(mapPos.getX(), mapPos.getY());
-            } else {
-                if (mRoutes[mPlannerState.currentRouteIndex].size() < 2 ||
-                        mRoutes[mPlannerState.currentRouteIndex].last().getDistanceTo(mapPos) <
-                        mRoutes[mPlannerState.currentRouteIndex].first().getDistanceTo(mapPos)) {
-                    mRoutes[mPlannerState.currentRouteIndex].append(mapPos);
-//                    emit routePointAdded(mapPos);
-                } else {
-                    mRoutes[mPlannerState.currentRouteIndex].prepend(mapPos);
+        return false;
+    }
+
+    if (isPress) {
+        if (keyboardModifiers == Qt::ControlModifier) {
+            if (mouseButtons & Qt::LeftButton) {
+
+            } else if (mouseButtons & Qt::RightButton) {
+                if (routeFound) {
+    //                mRoutes[mRouteNow][routeInd].setSpeed(mRoutePointSpeed);
+    //                mRoutes[mRouteNow][routeInd].setTime(mRoutePointTime);
+    //                mRoutes[mRouteNow][routeInd].setAttributes(mRoutePointAttributes);
                 }
             }
-        } else if (mouseButtons & Qt::RightButton) {
-            if (routeFound) {
-                mRoutes[mPlannerState.currentRouteIndex].removeAt(routeInd);
-            } else {
-//                removeLastRoutePoint();
+        } else if (keyboardModifiers == Qt::ShiftModifier) {
+            if (mouseButtons & Qt::LeftButton) {
+                if (routeFound) {
+                    mPlannerState.currentPointIndex = pointOnCurrRouteInd;
+                    mRoutes[mPlannerState.currentRouteIndex][pointOnCurrRouteInd].setXY(mapPos.getX(), mapPos.getY());
+                } else {
+                    if (mRoutes[mPlannerState.currentRouteIndex].size() < 2 ||
+                            mRoutes[mPlannerState.currentRouteIndex].last().getDistanceTo(mapPos) <
+                            mRoutes[mPlannerState.currentRouteIndex].first().getDistanceTo(mapPos)) {
+                        mRoutes[mPlannerState.currentRouteIndex].append(mapPos);
+    //                    emit routePointAdded(mapPos);
+                    } else {
+                        mRoutes[mPlannerState.currentRouteIndex].prepend(mapPos);
+                    }
+                }
+                emit requestRepaint();
+                return true;
+            } else if (mouseButtons & Qt::RightButton) {
+                if (routeFound) {
+                    mRoutes[mPlannerState.currentRouteIndex].removeAt(pointOnCurrRouteInd);
+                } else {
+    //                removeLastRoutePoint();
+                }
+                emit requestRepaint();
+                return true;
             }
         }
+        return false;
     }
+
+    return false;
 }
 
 int RoutePlannerModule::getClosestPoint(PosPoint p, QList<PosPoint> points, double &dist)

@@ -21,6 +21,7 @@ private:
 
     struct {
         int currentRouteIndex = 0;
+        int currentPointIndex = -1;
         bool drawRouteText = true;
     } mPlannerState;
 
