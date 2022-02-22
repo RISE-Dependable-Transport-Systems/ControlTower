@@ -1,21 +1,21 @@
-#ifndef FLYFORM_H
-#define FLYFORM_H
+#ifndef FLYUI_H
+#define FLYUI_H
 
 #include <QWidget>
 #include <QSharedPointer>
 #include "mavsdkvehicleconnection.h"
 
 namespace Ui {
-class FlyForm;
+class FlyUI;
 }
 
-class FlyForm : public QWidget
+class FlyUI : public QWidget
 {
     Q_OBJECT
 
 public:
-    explicit FlyForm(QWidget *parent = nullptr);
-    ~FlyForm();
+    explicit FlyUI(QWidget *parent = nullptr);
+    ~FlyUI();
 
     void setCurrentVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &currentVehicleConnection);
 
@@ -32,11 +32,11 @@ private slots:
 
     void on_gotoButton_clicked();
 
-    void on_setAltitudeButton_clicked();
+    void on_getPositionButton_clicked();
 
 private:
-    Ui::FlyForm *ui;
+    Ui::FlyUI *ui;
     QSharedPointer<MavsdkVehicleConnection> mCurrentVehicleConnection;
 };
 
-#endif // FLYFORM_H
+#endif // FLYUI_H

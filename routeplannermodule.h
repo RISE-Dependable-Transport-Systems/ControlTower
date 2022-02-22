@@ -11,6 +11,15 @@ public:
     // MapModule interface
     virtual void processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale) override;
     virtual bool processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale) override;
+    void setCurrentRouteIndex(int index);
+    int getCurrentRouteIndex();
+    QList<PosPoint> getCurrentRoute();
+    QList<PosPoint> getRoute(int index);
+    int getNumberOfRoutes();
+    void addNewRoute();
+    void addRoute(QList<PosPoint> route);
+    bool removeCurrentRoute();
+    void removeRoute(int index);
 
 private:
     typedef enum {

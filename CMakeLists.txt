@@ -29,13 +29,17 @@ find_package(MAVSDK REQUIRED)
 
 if(ANDROID)
   add_library(ControlTower SHARED
+    resources.qrc
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    flyform.cpp
-    flyform.h
-    flyform.ui
+    flyui.cpp
+    flyui.h
+    flyui.ui
+    planui.cpp
+    planui.h
+    planui.ui
     routeplannermodule.cpp
     routeplannermodule.h
     mavsdkstation.h
@@ -66,13 +70,17 @@ if(ANDROID)
   )
 else()
   add_executable(ControlTower
+    resources.qrc
     main.cpp
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    flyform.cpp
-    flyform.h
-    flyform.ui
+    flyui.cpp
+    flyui.h
+    flyui.ui
+    planui.cpp
+    planui.h
+    planui.ui
     routeplannermodule.cpp
     routeplannermodule.h
     mavsdkstation.h

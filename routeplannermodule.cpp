@@ -31,9 +31,7 @@ RoutePlannerModule::RoutePlannerModule()
     }
 
     mRoutes.clear();
-    QList<PosPoint> l;
-    mRoutes.append(l);
-
+    mRoutes.append(QList<PosPoint>());
 }
 
 void RoutePlannerModule::processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale)
@@ -118,6 +116,61 @@ bool RoutePlannerModule::processMouse(bool isPress, bool isRelease, bool isMove,
     }
 
     return false;
+}
+
+void RoutePlannerModule::setCurrentRouteIndex(int index)
+{
+    if (index >= 0 && index < mRoutes.size())
+        mPlannerState.currentRouteIndex = index;
+    emit requestRepaint();
+}
+
+int RoutePlannerModule::getCurrentRouteIndex()
+{
+    return mPlannerState.currentRouteIndex;
+}
+
+QList<PosPoint> RoutePlannerModule::getCurrentRoute()
+{
+    return getRoute(mPlannerState.currentRouteIndex);
+}
+
+QList<PosPoint> RoutePlannerModule::getRoute(int index)
+{
+    return mRoutes.at(index);
+}
+
+int RoutePlannerModule::getNumberOfRoutes()
+{
+    return mRoutes.size();
+}
+
+void RoutePlannerModule::addNewRoute()
+{
+    addRoute(QList<PosPoint>());
+}
+
+void RoutePlannerModule::addRoute(QList<PosPoint> route)
+{
+    mRoutes.append(route);
+}
+
+bool RoutePlannerModule::removeCurrentRoute()
+{
+    if (mRoutes.size() == 1)
+        return false;
+
+    removeRoute(mPlannerState.currentRouteIndex);
+
+    return true;
+}
+
+void RoutePlannerModule::removeRoute(int index)
+{
+    mRoutes.removeAt(index);
+
+    if (mPlannerState.currentRouteIndex == mRoutes.size())
+        mPlannerState.currentRouteIndex--;
 }
 
 int RoutePlannerModule::getClosestPoint(PosPoint p, QList<PosPoint> points, double &dist)

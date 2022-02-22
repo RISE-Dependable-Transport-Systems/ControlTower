@@ -14,7 +14,7 @@
    <string>Control Tower</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="lineWidth">
@@ -71,7 +71,7 @@
         </attribute>
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="FlyForm" name="flyForm" native="true">
+          <widget class="FlyUI" name="flyUI" native="true">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
              <horstretch>0</horstretch>
@@ -86,6 +86,18 @@
         <attribute name="title">
          <string>Plan</string>
         </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="PlanUI" name="planUI" native="true">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </widget>
      </widget>
@@ -112,9 +124,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>FlyForm</class>
+   <class>FlyUI</class>
    <extends>QWidget</extends>
-   <header>flyform.h</header>
+   <header>flyui.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>PlanUI</class>
+   <extends>QWidget</extends>
+   <header>planui.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -13,11 +13,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->mapWidget->setScaleFactor(0.1);
     ui->mapWidget->setSelectedObjectState(0);
-    QSharedPointer<RoutePlannerModule> mRoutePlanner = QSharedPointer<RoutePlannerModule>::create();
-    ui->mapWidget->addMapModule(mRoutePlanner);
+    ui->mapWidget->addMapModule(ui->planUI->getRoutePlanner());
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     mMavsdkStation->startListeningUDP();
+    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
+        // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
+        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
+
+        if (!mUbloxBasestation.isSerialConnected())
+            // Vehicle home = ENU reference
+            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
+
+        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
+        ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+    });
 
     QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
     foreach(const QSerialPortInfo &portInfo, ports) {
@@ -33,17 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
     }
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
 
-    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
-        // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
-        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
-
-        if (!mUbloxBasestation.isSerialConnected())
-            // Vehicle home = ENU reference
-            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
-
-        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
-        ui->flyForm->setCurrentVehicleConnection(vehicleConnection);
-    });
 }
 
 MainWindow::~MainWindow()
