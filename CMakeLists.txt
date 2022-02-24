@@ -46,6 +46,8 @@ if(ANDROID)
     mavsdkstation.cpp
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
+    waypointfollowerstation.h
+    waypointfollowerstation.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
@@ -87,6 +89,8 @@ else()
     mavsdkstation.cpp
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
+    waypointfollowerstation.h
+    waypointfollowerstation.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
