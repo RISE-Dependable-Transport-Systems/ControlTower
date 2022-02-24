@@ -25,5 +25,6 @@ private:
     UbloxBasestation mUbloxBasestation;
 
     void newMavsdkSystem();
+    void setDarkStyle();
 };
 #endif // MAINWINDOW_H
