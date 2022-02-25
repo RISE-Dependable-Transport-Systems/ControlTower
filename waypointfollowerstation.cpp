@@ -3,15 +3,19 @@
 #include <QDebug>
 #include <QLineF>
 
-WaypointFollowerStation::WaypointFollowerStation(QSharedPointer<MavsdkVehicleConnection> vehicleConnection)
+WaypointFollowerStation::WaypointFollowerStation()
 {
-    mVehicleConnection = vehicleConnection;
     connect(&mUpdateStateTimer, &QTimer::timeout, this, &WaypointFollowerStation::updateState);
 }
 
 void WaypointFollowerStation::clearRoute()
 {
     mWaypointList.clear();
+}
+
+void WaypointFollowerStation::addRoute(const QList<PosPoint> &route)
+{
+    mWaypointList.append(route);
 }
 
 void WaypointFollowerStation::addWaypoint(const PosPoint &point)
@@ -45,40 +49,6 @@ void WaypointFollowerStation::resetState()
 
     mCurrentState.stmState = WayPointFollowerStationSTMstates::NONE;
     mCurrentState.currentWaypointIndex = mWaypointList.size();
-}
-
-double WaypointFollowerStation::getCurvatureToPointInENU(QSharedPointer<VehicleState> vehicleState, const QPointF &point, PosType vehiclePosType)
-{
-    // vehicleState and point assumed in ENU frame
-    const PosPoint vehiclePos = vehicleState->getPosition(vehiclePosType);
-
-    // 1. transform point to vehicle frame, TODO: general transform in vehicleState?
-    QPointF pointInVehicleFrame;
-    // translate
-    pointInVehicleFrame.setX(point.x()-vehiclePos.getX());
-    pointInVehicleFrame.setY(point.y()-vehiclePos.getY());
-    // rotate
-    double currYaw_rad = vehiclePos.getYaw() * M_PI / 180.0;
-    const double newX = cos(currYaw_rad)*pointInVehicleFrame.x() - sin(currYaw_rad)*pointInVehicleFrame.y();
-    const double newY = sin(currYaw_rad)*pointInVehicleFrame.x() + cos(currYaw_rad)*pointInVehicleFrame.y();
-    pointInVehicleFrame.setX(newX);
-    pointInVehicleFrame.setY(newY);
-
-    return getCurvatureToPointInVehicleFrame(pointInVehicleFrame);
-}
-
-double WaypointFollowerStation::getCurvatureToPointInENU(const QPointF &point)
-{
-    return getCurvatureToPointInENU(mVehicleConnection->getVehicleState(), point, mPosTypeUsed);
-}
-
-double WaypointFollowerStation::getCurvatureToPointInVehicleFrame(const QPointF &point)
-{
-    // calc steering angle (pure pursuit)
-    double distanceSquared = pow(point.x(), 2) + pow(point.y(), 2);
-    double steeringAngleProportional = (2*point.y()) / distanceSquared;
-
-    return -steeringAngleProportional;
 }
 
 // TODO: utility function, move to a more central place
@@ -251,7 +221,8 @@ void WaypointFollowerStation::updateState()
                 closestWaypoint = mWaypointList.at(mCurrentState.currentWaypointIndex);
 
             // 4. Update control for current goal
-            mVehicleConnection->requestGotoENU(xyz_t {mCurrentState.currentGoal.getY(), mCurrentState.currentGoal.getY(), mCurrentState.overrideAltitude}); // TODO: use altitude from route and interpolate
+            mVehicleConnection->requestGotoENU(xyz_t {mCurrentState.currentGoal.getX(), mCurrentState.currentGoal.getY(), mCurrentState.overrideAltitude}); // TODO: use altitude from route and interpolate
+            qDebug() << intersections.size() << mCurrentState.currentGoal.getPoint();
 //            mMovementController->setDesiredAttributes(closestWaypoint.getAttributes());
         }
     } break;
@@ -266,6 +237,11 @@ void WaypointFollowerStation::updateState()
     default:
         break;
     }
+}
+
+void WaypointFollowerStation::setVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &vehicleConnection)
+{
+    mVehicleConnection = vehicleConnection;
 }
 
 PosType WaypointFollowerStation::getPosTypeUsed() const

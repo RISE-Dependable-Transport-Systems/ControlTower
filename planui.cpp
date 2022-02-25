@@ -41,3 +41,8 @@ void PlanUI::on_currentRouteSpinBox_valueChanged(int value)
 {
     mRoutePlanner->setCurrentRouteIndex(value-1);
 }
+
+void PlanUI::on_sendToAutopilotButton_clicked()
+{
+    emit routeDoneForUse(mRoutePlanner->getCurrentRoute());
+}

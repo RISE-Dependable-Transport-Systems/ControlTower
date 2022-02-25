@@ -68,3 +68,34 @@ void FlyUI::on_getPositionButton_clicked()
         ui->gotoZSpinBox->setValue(mCurrentVehicleConnection->getVehicleState()->getPosition().getHeight());
     }
 }
+
+void FlyUI::setCurrentWaypointFollower(const QSharedPointer<WaypointFollowerStation> &currentWaypointFollower)
+{
+    mCurrentWaypointFollower = currentWaypointFollower;
+}
+
+void FlyUI::on_apRestartButton_clicked()
+{
+    if (mCurrentWaypointFollower)
+        mCurrentWaypointFollower->startFollowingRoute(true);
+}
+
+void FlyUI::on_apStartButton_clicked()
+{
+    if (mCurrentWaypointFollower)
+        mCurrentWaypointFollower->startFollowingRoute(false);
+}
+
+void FlyUI::on_apPauseButton_clicked()
+{
+    if (mCurrentWaypointFollower)
+        mCurrentWaypointFollower->stop();
+}
+
+void FlyUI::on_apStopButton_clicked()
+{
+    if (mCurrentWaypointFollower) {
+        mCurrentWaypointFollower->stop();
+        mCurrentWaypointFollower->resetState();
+    }
+}

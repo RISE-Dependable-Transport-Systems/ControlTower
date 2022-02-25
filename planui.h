@@ -19,12 +19,17 @@ public:
 
     QSharedPointer<RoutePlannerModule> getRoutePlanner() const;
 
+signals:
+    void routeDoneForUse(const QList<PosPoint>& route);
+
 private slots:
     void on_addRouteButton_clicked();
 
     void on_removeRouteButton_clicked();
 
     void on_currentRouteSpinBox_valueChanged(int value);
+
+    void on_sendToAutopilotButton_clicked();
 
 private:
     Ui::PlanUI *ui;

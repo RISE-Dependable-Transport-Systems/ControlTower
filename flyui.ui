@@ -199,7 +199,7 @@
    <item>
     <widget class="QGroupBox" name="autopilotGroupBox">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="title">
       <string>Autopilot</string>

@@ -33,7 +33,7 @@
    <item>
     <widget class="QPushButton" name="sendToAutopilotButton">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="text">
       <string>Send to Autopilot</string>

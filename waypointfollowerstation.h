@@ -26,7 +26,7 @@ class WaypointFollowerStation : public QObject
 {
     Q_OBJECT
 public:
-    WaypointFollowerStation(QSharedPointer<MavsdkVehicleConnection> vehicleConnection);
+    WaypointFollowerStation();
 
     double getPurePursuitRadius() const;
     void setPurePursuitRadius(double value);
@@ -39,6 +39,7 @@ public:
     const PosPoint getCurrentGoal();
 
     void clearRoute();
+    void addRoute(const QList<PosPoint>& route);
     void addWaypoint(const PosPoint &point);
 
     void startFollowingRoute(bool fromBeginning);
@@ -46,14 +47,12 @@ public:
     void stop();
     void resetState();
 
-    static double getCurvatureToPointInENU(QSharedPointer<VehicleState> vehicleState, const QPointF& point, PosType vehiclePosType = PosType::simulated);
-    double getCurvatureToPointInENU(const QPointF& point);
-    static double getCurvatureToPointInVehicleFrame(const QPointF& point);
-
     double getInterpolatedSpeed(const PosPoint &currentGoal, const PosPoint &lastWaypoint, const PosPoint &nextWaypoint);
 
     PosType getPosTypeUsed() const;
     void setPosTypeUsed(const PosType &posTypeUsed);
+
+    void setVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &vehicleConnection);
 
 signals:
 
@@ -61,7 +60,7 @@ private:
     void updateState();
     WayPointFollowerStationState mCurrentState;
 
-    PosType mPosTypeUsed = PosType::fused; // The type of position (Odom, GNSS, UWB, ...) that should be used for planning
+    PosType mPosTypeUsed = PosType::simulated; // The type of position (Odom, GNSS, UWB, ...) that should be used for planning
     QSharedPointer<MavsdkVehicleConnection> mVehicleConnection;
     QList <PosPoint> mWaypointList;
     const unsigned mUpdateStatePeriod_ms = 50;
