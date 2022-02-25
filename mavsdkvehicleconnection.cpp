@@ -78,11 +78,6 @@ MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System>
 
 }
 
-QSharedPointer<VehicleState> MavsdkVehicleConnection::getVehicleState() const
-{
-    return mVehicleState;
-}
-
 void MavsdkVehicleConnection::setEnuReference(const llh_t &enuReference)
 {
     // TODO: set on vehicle as well (impact on EKF?)
@@ -159,4 +154,19 @@ void MavsdkVehicleConnection::requestGotoENU(const xyz_t &xyz)
 void MavsdkVehicleConnection::setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending)
 {
     mConvertLocalPositionsToGlobalBeforeSending = convertLocalPositionsToGlobalBeforeSending;
+}
+
+void MavsdkVehicleConnection::setWaypointFollower(const QSharedPointer<WaypointFollower> &waypointFollower)
+{
+    mWaypointFollower = waypointFollower;
+}
+
+bool MavsdkVehicleConnection::hasWaypointFollower()
+{
+    return !mWaypointFollower.isNull();
+}
+
+QSharedPointer<WaypointFollower> MavsdkVehicleConnection::getWaypointFollower() const
+{
+    return mWaypointFollower;
 }

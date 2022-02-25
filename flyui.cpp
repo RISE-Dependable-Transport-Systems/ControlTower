@@ -69,33 +69,38 @@ void FlyUI::on_getPositionButton_clicked()
     }
 }
 
-void FlyUI::setCurrentWaypointFollower(const QSharedPointer<WaypointFollowerStation> &currentWaypointFollower)
-{
-    mCurrentWaypointFollower = currentWaypointFollower;
-}
-
 void FlyUI::on_apRestartButton_clicked()
 {
-    if (mCurrentWaypointFollower)
-        mCurrentWaypointFollower->startFollowingRoute(true);
+    if (mCurrentVehicleConnection->hasWaypointFollower())
+        mCurrentVehicleConnection->getWaypointFollower()->startFollowingRoute(true);
 }
 
 void FlyUI::on_apStartButton_clicked()
 {
-    if (mCurrentWaypointFollower)
-        mCurrentWaypointFollower->startFollowingRoute(false);
+    if (mCurrentVehicleConnection->hasWaypointFollower())
+        mCurrentVehicleConnection->getWaypointFollower()->startFollowingRoute(false);
 }
 
 void FlyUI::on_apPauseButton_clicked()
 {
-    if (mCurrentWaypointFollower)
-        mCurrentWaypointFollower->stop();
+    if (mCurrentVehicleConnection->hasWaypointFollower())
+        mCurrentVehicleConnection->getWaypointFollower()->stop();
 }
 
 void FlyUI::on_apStopButton_clicked()
 {
-    if (mCurrentWaypointFollower) {
-        mCurrentWaypointFollower->stop();
-        mCurrentWaypointFollower->resetState();
+    if (mCurrentVehicleConnection->hasWaypointFollower()) {
+        mCurrentVehicleConnection->getWaypointFollower()->stop();
+        mCurrentVehicleConnection->getWaypointFollower()->resetState();
     }
 }
+
+void FlyUI::gotRouteForAutopilot(const QList<PosPoint> &route)
+{
+    if (!mCurrentVehicleConnection->hasWaypointFollower())
+        mCurrentVehicleConnection->setWaypointFollower(QSharedPointer<WaypointFollower>::create(mCurrentVehicleConnection, PosType::defaultPosType));
+
+    mCurrentVehicleConnection->getWaypointFollower()->clearRoute();
+    mCurrentVehicleConnection->getWaypointFollower()->addRoute(route);
+}
+

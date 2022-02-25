@@ -5,7 +5,6 @@
 #include "flyui.h"
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include "mavsdkstation.h"
-#include "waypointfollowerstation.h"
 #include "sdvp_qtcommon/gnss/ublox_basestation.h"
 
 QT_BEGIN_NAMESPACE
@@ -23,7 +22,6 @@ public:
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;
-    QSharedPointer<WaypointFollowerStation> mWaypointFollowerStation;
     UbloxBasestation mUbloxBasestation;
 
     void newMavsdkSystem();

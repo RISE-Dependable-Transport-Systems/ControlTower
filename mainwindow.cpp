@@ -53,12 +53,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     mMavsdkStation->startListeningUDP();
-    mWaypointFollowerStation = QSharedPointer<WaypointFollowerStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
         // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
         vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
-        // TODO: assumes only one vehicleconnection exists for now
-        mWaypointFollowerStation->setVehicleConnection(vehicleConnection);
 
         if (!mUbloxBasestation.isSerialConnected())
             // Vehicle home = ENU reference
@@ -66,15 +63,9 @@ MainWindow::MainWindow(QWidget *parent)
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
         ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
-        ui->flyUI->setCurrentWaypointFollower(mWaypointFollowerStation);
     });
     // TODO: refactor, where should this be done?
-    connect(ui->planUI, &PlanUI::routeDoneForUse, [this](const QList<PosPoint>& route) {
-        if (mWaypointFollowerStation) {
-            mWaypointFollowerStation->clearRoute();
-            mWaypointFollowerStation->addRoute(route);
-        }
-    });
+    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
 
     QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
     foreach(const QSerialPortInfo &portInfo, ports) {

@@ -44,16 +44,20 @@ if(ANDROID)
     routeplannermodule.h
     mavsdkstation.h
     mavsdkstation.cpp
+    sdvp_qtcommon/vehicleconnection.cpp
+    sdvp_qtcommon/vehicleconnection.h
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
-    waypointfollowerstation.h
-    waypointfollowerstation.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
+    sdvp_qtcommon/movementcontroller.cpp
+    sdvp_qtcommon/movementcontroller.h
+    sdvp_qtcommon/waypointfollower.cpp
+    sdvp_qtcommon/waypointfollower.h
     sdvp_qtcommon/coordinatetransforms.h
     sdvp_qtcommon/mapwidget.cpp
     sdvp_qtcommon/mapwidget.h
@@ -87,16 +91,20 @@ else()
     routeplannermodule.h
     mavsdkstation.h
     mavsdkstation.cpp
+    sdvp_qtcommon/vehicleconnection.cpp
+    sdvp_qtcommon/vehicleconnection.h
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
-    waypointfollowerstation.h
-    waypointfollowerstation.cpp
     sdvp_qtcommon/objectstate.cpp
     sdvp_qtcommon/objectstate.h
     sdvp_qtcommon/vehiclestate.cpp
     sdvp_qtcommon/vehiclestate.h
     sdvp_qtcommon/copterstate.cpp
     sdvp_qtcommon/copterstate.h
+    sdvp_qtcommon/movementcontroller.cpp
+    sdvp_qtcommon/movementcontroller.h
+    sdvp_qtcommon/waypointfollower.cpp
+    sdvp_qtcommon/waypointfollower.h
     sdvp_qtcommon/coordinatetransforms.h
     sdvp_qtcommon/mapwidget.cpp
     sdvp_qtcommon/mapwidget.h

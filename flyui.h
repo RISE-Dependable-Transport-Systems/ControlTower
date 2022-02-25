@@ -4,7 +4,7 @@
 #include <QWidget>
 #include <QSharedPointer>
 #include "mavsdkvehicleconnection.h"
-#include "waypointfollowerstation.h"
+#include "sdvp_qtcommon/waypointfollower.h"
 
 namespace Ui {
 class FlyUI;
@@ -20,7 +20,8 @@ public:
 
     void setCurrentVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &currentVehicleConnection);
 
-    void setCurrentWaypointFollower(const QSharedPointer<WaypointFollowerStation> &currentWaypointFollower);
+public slots:
+    void gotRouteForAutopilot(const QList<PosPoint>& route);
 
 private slots:
     void on_takeoffButton_clicked();
@@ -45,11 +46,10 @@ private slots:
 
     void on_apStopButton_clicked();
 
+
 private:
     Ui::FlyUI *ui;
     QSharedPointer<MavsdkVehicleConnection> mCurrentVehicleConnection;
-    // TODO: only suppoert for station-basesd autopilot for now.
-    QSharedPointer<WaypointFollowerStation> mCurrentWaypointFollower;
 };
 
 #endif // FLYUI_H
