@@ -70,7 +70,7 @@
    <item>
     <widget class="QPushButton" name="landButton">
      <property name="text">
-      <string>Land here</string>
+      <string>Land Here</string>
      </property>
     </widget>
    </item>

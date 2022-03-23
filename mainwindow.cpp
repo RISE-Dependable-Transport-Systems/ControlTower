@@ -24,29 +24,19 @@ MainWindow::MainWindow(QWidget *parent)
         // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
         vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
 
-        if (!mUbloxBasestation.isSerialConnected())
-            // Vehicle home = ENU reference
-            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
+        // Vehicle home = ENU reference TODO: only use home as ENU when basestation not running (independent of when basestation is started)
+//        if (!ui->ubloxBasestationUI->isBasestationRunning())
+//            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
-        ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+        vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
+        ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+//        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
     });
-    // TODO: refactor, where should this be done?
-    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
 
-    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-    foreach(const QSerialPortInfo &portInfo, ports) {
-        if (portInfo.manufacturer().toLower().replace("-", "").contains("ublox")) {
-            mUbloxBasestation.connectSerial(portInfo);
-            qDebug() << "Connected to:" << portInfo.systemLocation();
-        }
-    }
-    if (mUbloxBasestation.isSerialConnected()) {
-        // Base position = ENU reference
-        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
-        connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData); // TODO: not fully implemented
-    }
+    connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
+    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
 
     mMavsdkStation->startListeningUDP();
 }

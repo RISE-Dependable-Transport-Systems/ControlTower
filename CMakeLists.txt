@@ -40,6 +40,9 @@ if(ANDROID)
     planui.cpp
     planui.h
     planui.ui
+    ubloxbasestationui.cpp
+    ubloxbasestationui.h
+    ubloxbasestationui.ui
     routeplannermodule.cpp
     routeplannermodule.h
     mavsdkstation.h
@@ -87,6 +90,9 @@ else()
     planui.cpp
     planui.h
     planui.ui
+    ubloxbasestationui.cpp
+    ubloxbasestationui.h
+    ubloxbasestationui.ui
     routeplannermodule.cpp
     routeplannermodule.h
     mavsdkstation.h
