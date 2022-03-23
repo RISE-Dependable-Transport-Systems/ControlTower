@@ -7,6 +7,57 @@
 
 #include "routeplannermodule.h"
 
+MainWindow::MainWindow(QWidget *parent)
+    : QMainWindow(parent)
+    , ui(new Ui::MainWindow)
+{
+    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+//    setDarkStyle();
+
+    ui->setupUi(this);
+    ui->mapWidget->setScaleFactor(0.05);
+    ui->mapWidget->setSelectedObjectState(0);
+    ui->mapWidget->addMapModule(ui->planUI->getRoutePlanner());
+
+    mMavsdkStation = QSharedPointer<MavsdkStation>::create();
+    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
+        // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
+        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
+
+        if (!mUbloxBasestation.isSerialConnected())
+            // Vehicle home = ENU reference
+            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
+
+        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
+        ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+    });
+    // TODO: refactor, where should this be done?
+    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+
+    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
+    foreach(const QSerialPortInfo &portInfo, ports) {
+        if (portInfo.manufacturer().toLower().replace("-", "").contains("ublox")) {
+            mUbloxBasestation.connectSerial(portInfo);
+            qDebug() << "Connected to:" << portInfo.systemLocation();
+        }
+    }
+    if (mUbloxBasestation.isSerialConnected()) {
+        // Base position = ENU reference
+        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
+        connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData); // TODO: not fully implemented
+    }
+    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
+
+    mMavsdkStation->startListeningUDP();
+}
+
+MainWindow::~MainWindow()
+{
+    // Allow MAVSDK to finish
+    thread()->msleep(10);
+    delete ui;
+}
+
 void MainWindow::setDarkStyle()
 {
     // based on https://stackoverflow.com/a/45634644
@@ -37,55 +88,4 @@ void MainWindow::setDarkStyle()
     darkPalette.setColor(QPalette::Disabled,QPalette::HighlightedText,QColor(127,127,127));
 
     qApp->setPalette(darkPalette);
-}
-
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
-{
-    QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
-//    setDarkStyle();
-
-    ui->setupUi(this);
-    ui->mapWidget->setScaleFactor(0.1);
-    ui->mapWidget->setSelectedObjectState(0);
-    ui->mapWidget->addMapModule(ui->planUI->getRoutePlanner());
-
-    mMavsdkStation = QSharedPointer<MavsdkStation>::create();
-    mMavsdkStation->startListeningUDP();
-    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
-        // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
-        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
-
-        if (!mUbloxBasestation.isSerialConnected())
-            // Vehicle home = ENU reference
-            connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, ui->mapWidget, &MapWidget::setEnuRef);
-
-        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
-        ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
-    });
-    // TODO: refactor, where should this be done?
-    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-
-    QList<QSerialPortInfo> ports = QSerialPortInfo::availablePorts();
-    foreach(const QSerialPortInfo &portInfo, ports) {
-        if (portInfo.manufacturer().toLower().replace("-", "").contains("ublox")) {
-            mUbloxBasestation.connectSerial(portInfo);
-            qDebug() << "Connected to:" << portInfo.systemLocation();
-        }
-    }
-    if (mUbloxBasestation.isSerialConnected()) {
-        // Base position = ENU reference
-        connect(&mUbloxBasestation, &UbloxBasestation::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
-        connect(&mUbloxBasestation, &UbloxBasestation::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData); // TODO: not fully implemented
-    }
-    connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
-
-}
-
-MainWindow::~MainWindow()
-{
-    // Allow MAVSDK to finish
-    thread()->msleep(10);
-    delete ui;
 }
