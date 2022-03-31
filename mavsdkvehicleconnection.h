@@ -17,6 +17,7 @@ class MavsdkVehicleConnection : public VehicleConnection
 public:
     explicit MavsdkVehicleConnection(std::shared_ptr<mavsdk::System> system);
     void setEnuReference(const llh_t &enuReference);
+    void setHomeLlh(const llh_t &homeLlh);
     void requestArm();
     void requestDisarm();
     void requestTakeoff();

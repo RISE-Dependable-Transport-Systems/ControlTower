@@ -80,8 +80,33 @@ MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System>
 
 void MavsdkVehicleConnection::setEnuReference(const llh_t &enuReference)
 {
-    // TODO: set on vehicle as well (impact on EKF?)
     mEnuReference = enuReference;
+}
+
+void MavsdkVehicleConnection::setHomeLlh(const llh_t &homeLlh)
+{
+    // Set new home in llh via MAVLINK
+    mavsdk::MavlinkPassthrough::CommandLong ComLong;
+    ComLong.target_compid = mMavlinkPassthrough->get_target_compid();
+    ComLong.target_sysid = mMavlinkPassthrough->get_target_sysid();
+    ComLong.command = MAV_CMD_DO_SET_HOME;
+    ComLong.param1 = 0;
+    ComLong.param2 = 0;
+    ComLong.param3 = 0;
+    ComLong.param4 = NAN;
+    ComLong.param5 = homeLlh.latitude;
+    ComLong.param6 = homeLlh.longitude;
+    ComLong.param7 = homeLlh.height;
+
+    if (mMavlinkPassthrough->send_command_long(ComLong) == mavsdk::MavlinkPassthrough::Result::Success) {
+        xyz_t xyz = coordinateTransforms::llhToEnu(mEnuReference, homeLlh);
+
+        auto homePos = mVehicleState->getHomePosition();
+        homePos.setX(xyz.x);
+        homePos.setY(xyz.y);
+        homePos.setHeight(xyz.z);
+        mVehicleState->setHomePosition(homePos);
+    }
 }
 
 void MavsdkVehicleConnection::requestArm()
@@ -135,7 +160,7 @@ void MavsdkVehicleConnection::requestReturnToHome()
 
 void MavsdkVehicleConnection::requestGotoLlh(const llh_t &llh)
 {
-    mAction->goto_location_async(llh.latitude, llh.longitude, llh.height, 0, [&llh](mavsdk::Action::Result res){
+    mAction->goto_location_async(llh.latitude, llh.longitude, llh.height, 0, [](mavsdk::Action::Result res){
         if (res != mavsdk::Action::Result::Success)
             qDebug() << "Warning: MavsdkVehicleConnection's goto request failed.";
     });
@@ -167,7 +192,7 @@ void MavsdkVehicleConnection::inputRtcmData(const QByteArray &rtcmData)
         mavRtcmData.flags = (sequenceId & 0x1F) << 3;
         memcpy(mavRtcmData.data, rtcmData.data(), rtcmData.size());
 
-        mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_our_sysid(), mMavlinkPassthrough->get_our_compid(), &mavRtcmMsg, &mavRtcmData);
+        mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_target_sysid(), mMavlinkPassthrough->get_target_compid(), &mavRtcmMsg, &mavRtcmData);
         if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
             qDebug() << "Warning: could not send RTCM via MAVLINK.";
     } else { // rtcm data needs to be fragmented into multiple messages
@@ -181,7 +206,7 @@ void MavsdkVehicleConnection::inputRtcmData(const QByteArray &rtcmData)
             mavRtcmData.len = fragmentLength;
             memcpy(mavRtcmData.data, rtcmData.data() + numBytesProcessed, fragmentLength);
 
-            mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_our_sysid(), mMavlinkPassthrough->get_our_compid(), &mavRtcmMsg, &mavRtcmData);
+            mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_target_sysid(), mMavlinkPassthrough->get_target_compid(), &mavRtcmMsg, &mavRtcmData);
             if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
                 qDebug() << "Warning: could not send RTCM via MAVLINK.";
             numBytesProcessed += fragmentLength;

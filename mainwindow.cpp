@@ -24,12 +24,16 @@ MainWindow::MainWindow(QWidget *parent)
         // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
         vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
 
-        // If basestation is not running: Vehicle home = ENU reference
         // Note: single connection assumed for now
+        // If basestation is not running: vehicle home -> ENU reference (Basestation position -> ENU reference, otherwise)
         connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, [this](const llh_t &homePositionLlh){
             if (!ui->ubloxBasestationUI->isBasestationRunning())
                 ui->mapWidget->setEnuRef(homePositionLlh);
+//            qDebug() << "Home:" << homePositionLlh.latitude << homePositionLlh.longitude;
         });
+        // If basestation is running: ENU reference -> vehicle home
+        // TODO: this needs to be offset (we do not want to land on the GNSS antenna), e.g., by using home at take off and moving with ENU
+//        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::setHomeLlh);
 
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
@@ -39,8 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
-    connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
+    connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
 
     mMavsdkStation->startListeningUDP();
