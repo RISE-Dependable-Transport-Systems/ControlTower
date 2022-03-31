@@ -151,6 +151,46 @@ void MavsdkVehicleConnection::requestGotoENU(const xyz_t &xyz)
     }
 }
 
+void MavsdkVehicleConnection::inputRtcmData(const QByteArray &rtcmData)
+{
+    // See: https://github.com/mavlink/qgroundcontrol/blob/aba881bf8e3f2fdbf63ef0689a3bf0432f597759/src/GPS/RTCM/RTCMMavlink.cc#L24
+    if (mMavlinkPassthrough == nullptr)
+        return;
+
+    static uint8_t sequenceId = 0;
+
+    mavlink_message_t mavRtcmMsg;
+    mavlink_gps_rtcm_data_t mavRtcmData;
+    memset(&mavRtcmData, 0, sizeof(mavlink_gps_rtcm_data_t));
+    if (rtcmData.length() < MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN) {
+        mavRtcmData.len = rtcmData.length();
+        mavRtcmData.flags = (sequenceId & 0x1F) << 3;
+        memcpy(mavRtcmData.data, rtcmData.data(), rtcmData.size());
+
+        mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_our_sysid(), mMavlinkPassthrough->get_our_compid(), &mavRtcmMsg, &mavRtcmData);
+        if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
+            qDebug() << "Warning: could not send RTCM via MAVLINK.";
+    } else { // rtcm data needs to be fragmented into multiple messages
+        uint8_t fragmentId = 0;
+        int numBytesProcessed = 0;
+        while (numBytesProcessed < rtcmData.size()) {
+            int fragmentLength = std::min(rtcmData.size() - numBytesProcessed, MAVLINK_MSG_GPS_RTCM_DATA_FIELD_DATA_LEN);
+            mavRtcmData.flags = 1;                          // LSB set indicates message is fragmented
+            mavRtcmData.flags |= fragmentId++ << 1;         // Next 2 bits are fragment id
+            mavRtcmData.flags |= (sequenceId & 0x1F) << 3;  // Next 5 bits are sequence id
+            mavRtcmData.len = fragmentLength;
+            memcpy(mavRtcmData.data, rtcmData.data() + numBytesProcessed, fragmentLength);
+
+            mavlink_msg_gps_rtcm_data_encode(mMavlinkPassthrough->get_our_sysid(), mMavlinkPassthrough->get_our_compid(), &mavRtcmMsg, &mavRtcmData);
+            if (mMavlinkPassthrough->send_message(mavRtcmMsg) != mavsdk::MavlinkPassthrough::Result::Success)
+                qDebug() << "Warning: could not send RTCM via MAVLINK.";
+            numBytesProcessed += fragmentLength;
+        }
+    }
+
+    sequenceId++;
+}
+
 void MavsdkVehicleConnection::setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending)
 {
     mConvertLocalPositionsToGlobalBeforeSending = convertLocalPositionsToGlobalBeforeSending;

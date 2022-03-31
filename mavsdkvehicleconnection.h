@@ -24,6 +24,7 @@ public:
     void requestReturnToHome();
     void requestGotoLlh(const llh_t &llh);
     virtual void requestGotoENU(const xyz_t &xyz) override;
+    void inputRtcmData(const QByteArray &rtcmData);
 
     void setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending);
 

@@ -30,7 +30,9 @@ bool MavsdkStation::startListeningUDP(uint16_t port)
 
 void MavsdkStation::forwardRtcmData(const QByteArray &data, const int &type)
 {
-    // TODO: forward to all vehicles
+    Q_UNUSED(type)
+    for (const auto &vehicleConnection : mVehicleConnectionMap)
+        vehicleConnection->inputRtcmData(data);
 }
 
 void MavsdkStation::setEnuReference(const llh_t &enuReference)
