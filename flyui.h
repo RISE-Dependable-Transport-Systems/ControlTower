@@ -5,6 +5,7 @@
 #include <QSharedPointer>
 #include "mavsdkvehicleconnection.h"
 #include "sdvp_qtcommon/waypointfollower.h"
+#include "sdvp_qtcommon/mapwidget.h"
 
 namespace Ui {
 class FlyUI;
@@ -19,6 +20,7 @@ public:
     ~FlyUI();
 
     void setCurrentVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &currentVehicleConnection);
+    QSharedPointer<MapModule> getGotoClickOnMapModule();
 
 public slots:
     void gotRouteForAutopilot(const QList<PosPoint>& route);
@@ -48,7 +50,21 @@ private slots:
 
 
 private:
+    class GotoClickOnMapModule : public MapModule {
+        // MapModule interface
+    public:
+        explicit GotoClickOnMapModule(FlyUI *parent);
+        virtual void processPaint(QPainter &painter, int width, int height, bool highQuality, QTransform drawTrans, QTransform txtTrans, double scale) override;
+        virtual bool processMouse(bool isPress, bool isRelease, bool isMove, bool isWheel, QPoint widgetPos, PosPoint mapPos, double wheelAngleDelta, Qt::KeyboardModifiers keyboardModifiers, Qt::MouseButtons mouseButtons, double scale) override;
+    private:
+        FlyUI *mFlyUI;
+        QMenu mGotoContextMenu;
+        QAction mGotoAction;
+        PosPoint mLastClickedMapPos;
+    };
+
     Ui::FlyUI *ui;
+    QSharedPointer<GotoClickOnMapModule> mGotoClickOnMapModule;
     QSharedPointer<MavsdkVehicleConnection> mCurrentVehicleConnection;
 };
 

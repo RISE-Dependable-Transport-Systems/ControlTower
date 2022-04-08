@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->setSelectedObjectState(0);
     ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
+    ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
