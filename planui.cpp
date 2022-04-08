@@ -16,7 +16,7 @@ PlanUI::~PlanUI()
     delete ui;
 }
 
-QSharedPointer<RoutePlannerModule> PlanUI::getRoutePlanner() const
+QSharedPointer<RoutePlannerModule> PlanUI::getRoutePlannerModule() const
 {
     return mRoutePlanner;
 }

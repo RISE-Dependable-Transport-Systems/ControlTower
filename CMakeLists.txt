@@ -40,11 +40,16 @@ if(ANDROID)
     planui.cpp
     planui.h
     planui.ui
+    traceui.cpp
+    traceui.h
+    traceui.ui
     ubloxbasestationui.cpp
     ubloxbasestationui.h
     ubloxbasestationui.ui
     routeplannermodule.cpp
     routeplannermodule.h
+    tracemodule.cpp
+    tracemodule.h
     mavsdkstation.h
     mavsdkstation.cpp
     sdvp_qtcommon/vehicleconnection.cpp
@@ -90,11 +95,16 @@ else()
     planui.cpp
     planui.h
     planui.ui
+    traceui.cpp
+    traceui.h
+    traceui.ui
     ubloxbasestationui.cpp
     ubloxbasestationui.h
     ubloxbasestationui.ui
     routeplannermodule.cpp
     routeplannermodule.h
+    tracemodule.cpp
+    tracemodule.h
     mavsdkstation.h
     mavsdkstation.cpp
     sdvp_qtcommon/vehicleconnection.cpp

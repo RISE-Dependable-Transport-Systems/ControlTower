@@ -5,8 +5,6 @@
 #include <QStyleFactory>
 #include "sdvp_qtcommon/pospoint.h"
 
-#include "routeplannermodule.h"
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -17,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);
-    ui->mapWidget->addMapModule(ui->planUI->getRoutePlanner());
+    ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
+    ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
@@ -40,6 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
         ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
+        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
     });
 
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);

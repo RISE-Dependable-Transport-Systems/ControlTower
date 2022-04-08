@@ -17,7 +17,7 @@ public:
     explicit PlanUI(QWidget *parent = nullptr);
     ~PlanUI();
 
-    QSharedPointer<RoutePlannerModule> getRoutePlanner() const;
+    QSharedPointer<RoutePlannerModule> getRoutePlannerModule() const;
 
 signals:
     void routeDoneForUse(const QList<PosPoint>& route);

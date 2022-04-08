@@ -4,5 +4,9 @@
         <file>icons/Play-96.png</file>
         <file>icons/Restart-96.png</file>
         <file>icons/Stop-96.png</file>
+        <file>icons/icons8-email-send-96.png</file>
+        <file>icons/icons8-gps-signal-96.png</file>
+        <file>icons/icons8-itinerary-96.png</file>
+        <file>icons/icons8-video-record-96.png</file>
     </qresource>
 </RCC>
