@@ -36,6 +36,7 @@ void TraceModule::processPaint(QPainter &painter, int width, int height, bool hi
 {
     QPen pen;
     pen.setWidthF(7.5/scale);
+    painter.setTransform(drawTrans);
 
     if (mTraceModuleState.currentTraceIndex < 0)
         return;
