@@ -101,11 +101,17 @@ void FlyUI::on_apStopButton_clicked()
     }
 }
 
+QSharedPointer<MavsdkVehicleConnection> FlyUI::getCurrentVehicleConnection() const
+{
+    return mCurrentVehicleConnection;
+}
+
 void FlyUI::gotRouteForAutopilot(const QList<PosPoint> &route)
 {
     if (!mCurrentVehicleConnection->hasWaypointFollower())
         mCurrentVehicleConnection->setWaypointFollower(QSharedPointer<WaypointFollower>::create(mCurrentVehicleConnection, PosType::defaultPosType));
 
+    mCurrentVehicleConnection->getWaypointFollower()->setPurePursuitRadius(1.5);
     mCurrentVehicleConnection->getWaypointFollower()->clearRoute();
     mCurrentVehicleConnection->getWaypointFollower()->addRoute(route);
 }
@@ -156,4 +162,11 @@ bool FlyUI::GotoClickOnMapModule::processMouse(bool isPress, bool isRelease, boo
         return true;
     } else
         return false;
+}
+
+void FlyUI::on_precisionLandButton_clicked()
+{
+    if (mCurrentVehicleConnection) {
+        mCurrentVehicleConnection->requestPrecisionLanding();
+    }
 }

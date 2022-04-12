@@ -23,6 +23,7 @@ private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;
     UbloxBasestation mUbloxBasestation;
+    QTimer mPreclandTestTimer;
 
     void newMavsdkSystem();
     void setDarkStyle();

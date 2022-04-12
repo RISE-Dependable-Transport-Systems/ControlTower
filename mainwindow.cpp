@@ -4,6 +4,7 @@
 #include <QThread>
 #include <QStyleFactory>
 #include "sdvp_qtcommon/pospoint.h"
+#include "sdvp_qtcommon/copterstate.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -34,7 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
         // If basestation is running: ENU reference -> vehicle home
         // TODO: this needs to be offset (we do not want to land on the GNSS antenna), e.g., by using home at take off and moving with ENU
 //        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::setHomeLlh);
-
+        // TODO: Gps Origin seems to be set at boot and not be updated (i.e., not follow vehicle home)
+//        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::sendSetGpsOriginLlh);
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
@@ -47,6 +49,26 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+
+    // TODO: for testing precland
+    // should be ubloxrover (RELPOSNED) + offset -> landing target
+//    connect(&mPreclandTestTimer, &QTimer::timeout, [&](){
+//        static double x = 0.0;
+//        if(ui->flyUI->getCurrentVehicleConnection() && ui->flyUI->getCurrentVehicleConnection()->getVehicleState().dynamicCast<CopterState>()->getLandedState() == CopterState::LandedState::InAir){
+//            ui->flyUI->getCurrentVehicleConnection()->sendLandingTargetENU({x+=0.3, 1.0, 0.0});
+//            if (x < 50.0)
+//                ui->flyUI->getCurrentVehicleConnection()->requestGotoENU({x+0.5, 1.0, 30.0});
+//            else if (x >= 50.0 && x <= 51.0) {
+//                qDebug() << "Landing!";
+//                ui->flyUI->getCurrentVehicleConnection()->requestPrecisionLanding();
+//            }
+//        } else if (ui->flyUI->getCurrentVehicleConnection() && ui->flyUI->getCurrentVehicleConnection()->getVehicleState().dynamicCast<CopterState>()->getLandedState() == CopterState::LandedState::Landing)
+//            ui->flyUI->getCurrentVehicleConnection()->sendLandingTargetENU({x+=0.3, 1.0, 0.0});
+//        else
+//            x = 0.0;
+//        qDebug() << x;
+//    });
+//    mPreclandTestTimer.start(200);
 
     mMavsdkStation->startListeningUDP();
 }

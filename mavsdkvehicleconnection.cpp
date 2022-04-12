@@ -1,6 +1,7 @@
 #include "mavsdkvehicleconnection.h"
 #include "sdvp_qtcommon/copterstate.h"
 #include <QDebug>
+#include <QDateTime>
 
 MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System> system)
 {
@@ -39,6 +40,12 @@ MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System>
         mVehicleState->setHomePosition(homePos);
 
         emit gotVehicleHomeLlh({position.latitude_deg, position.longitude_deg, position.absolute_altitude_m});
+
+        // hook onto this callback to poll gps origin
+        mTelemetry->get_gps_global_origin_async([this](mavsdk::Telemetry::Result result, mavsdk::Telemetry::GpsGlobalOrigin gpsGlobalOrigin){
+            if (result == mavsdk::Telemetry::Result::Success)
+                mGpsGlobalOrigin = {gpsGlobalOrigin.latitude_deg, gpsGlobalOrigin.longitude_deg, gpsGlobalOrigin.altitude_m};
+        });
     });
 
     mTelemetry->subscribe_position([this](mavsdk::Telemetry::Position position) {
@@ -72,8 +79,13 @@ MavsdkVehicleConnection::MavsdkVehicleConnection(std::shared_ptr<mavsdk::System>
     // Set up action plugin
     mAction.reset(new mavsdk::Action(mSystem));
 
-    // Set up MAVLINK passthrough to send rtcm data to drone (no plugin exists for this in MAVSDK v1.0.8)
-    // TODO: use to set home position on system?
+    // Set up praram plugin
+    mParam.reset(new mavsdk::Param(mSystem));
+    // Precision Landing: set required target tracking accuracy for starting approach
+    if (mParam->set_param_float("PLD_HACC_RAD", 5.0) != mavsdk::Param::Result::Success)
+        qDebug() << "Warning: failed to set PLD_HACC_RAD";
+
+    // Set up MAVLINK passthrough to send rtcm data to drone (no plugin exists for this in MAVSDK v1.2.0)
     mMavlinkPassthrough.reset(new mavsdk::MavlinkPassthrough(mSystem));
 
 }
@@ -147,6 +159,21 @@ void MavsdkVehicleConnection::requestLanding()
         qDebug() << "Warning: MavsdkVehicleConnection is trying to land with an unknown/incompatible vehicle type, ignored.";
 }
 
+void MavsdkVehicleConnection::requestPrecisionLanding()
+{
+    mavsdk::MavlinkPassthrough::CommandLong ComLong;
+    memset(&ComLong, 0, sizeof (ComLong));
+    ComLong.target_compid = mMavlinkPassthrough->get_target_compid();
+    ComLong.target_sysid = mMavlinkPassthrough->get_target_sysid();
+    ComLong.command = MAV_CMD_DO_SET_MODE;
+    ComLong.param1 = MAV_MODE_FLAG_SAFETY_ARMED | MAV_MODE_FLAG_CUSTOM_MODE_ENABLED;
+    ComLong.param2 = 4; // PX4_CUSTOM_MAIN_MODE_AUTO
+    ComLong.param3 = 9; // PX4_CUSTOM_SUB_MODE_AUTO_PRECLAND
+
+    if (mMavlinkPassthrough->send_command_long(ComLong) != mavsdk::MavlinkPassthrough::Result::Success)
+        qDebug() << "Warning: MavsdkVehicleConnection's precision land request failed.";
+}
+
 void MavsdkVehicleConnection::requestReturnToHome()
 {
     if (mVehicleType == MAV_TYPE::MAV_TYPE_QUADROTOR) {
@@ -214,6 +241,72 @@ void MavsdkVehicleConnection::inputRtcmData(const QByteArray &rtcmData)
     }
 
     sequenceId++;
+}
+
+void MavsdkVehicleConnection::sendLandingTargetLlh(const llh_t &landingTargetLlh)
+{
+    if (mMavlinkPassthrough == nullptr)
+        return;
+
+    // Note from https://docs.px4.io/master/en/advanced_features/precland.html#mission
+    // The system must publish the coordinates of the target in the LANDING_TARGET message.
+    // Note that PX4 requires LANDING_TARGET.frame to be MAV_FRAME_LOCAL_NED and only populates the fields x, y, and z.
+    // The origin of the local NED frame [0,0] is the home position.
+
+    // Note by Marvin: not home position, gps origin! I tried to update gps origin using mavlink_set_gps_global_origin_t,
+    // but it is not updated while flying (PX4 1.12). Thus, we need to take their gps origin for calculating landing target in NED here.
+
+    // From Llh to their ENU
+    xyz_t landingTargetENUgpsOrigin = coordinateTransforms::llhToEnu({mGpsGlobalOrigin.latitude, mGpsGlobalOrigin.longitude, mGpsGlobalOrigin.height}, landingTargetLlh);
+
+    // Send landing target message (with NED frame)
+    mavlink_message_t mavLandingTargetMsg;
+    mavlink_landing_target_t mavLandingTargetNED;
+    memset(&mavLandingTargetNED, 0, sizeof(mavlink_landing_target_t));
+
+    mavLandingTargetNED.position_valid = 1;
+    mavLandingTargetNED.frame = MAV_FRAME_LOCAL_NED;
+    mavLandingTargetNED.time_usec = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();
+
+    // ENU -> NED
+    mavLandingTargetNED.x = landingTargetENUgpsOrigin.y;
+    mavLandingTargetNED.y = landingTargetENUgpsOrigin.x;
+    mavLandingTargetNED.z = -landingTargetENUgpsOrigin.z;
+
+    mavlink_msg_landing_target_encode(mMavlinkPassthrough->get_target_sysid(), mMavlinkPassthrough->get_target_compid(), &mavLandingTargetMsg, &mavLandingTargetNED);
+    if (mMavlinkPassthrough->send_message(mavLandingTargetMsg) != mavsdk::MavlinkPassthrough::Result::Success)
+        qDebug() << "Warning: could not send LANDING_TARGET via MAVLINK.";
+
+}
+
+void MavsdkVehicleConnection::sendLandingTargetENU(const xyz_t &landingTargetENU)
+{
+    if (mMavlinkPassthrough == nullptr)
+        return;
+
+    llh_t landingTargetLlh = coordinateTransforms::enuToLlh(mEnuReference, landingTargetENU);
+    sendLandingTargetLlh(landingTargetLlh);
+}
+
+void MavsdkVehicleConnection::sendSetGpsOriginLlh(const llh_t &gpsOriginLlh)
+{
+    if (mMavlinkPassthrough == nullptr)
+        return;
+
+    mavlink_message_t mavGpsGlobalOriginMsg;
+    mavlink_set_gps_global_origin_t mavGpsGlobalOrigin;
+    memset(&mavGpsGlobalOrigin, 0, sizeof(mavlink_set_gps_global_origin_t));
+
+    mavGpsGlobalOrigin.latitude = (int) (gpsOriginLlh.latitude * 1e7);
+    mavGpsGlobalOrigin.longitude = (int) (gpsOriginLlh.longitude * 1e7);
+    mavGpsGlobalOrigin.altitude = (int) (gpsOriginLlh.height * 1e3);
+    mavGpsGlobalOrigin.target_system = mMavlinkPassthrough->get_target_sysid();
+
+    mavlink_msg_set_gps_global_origin_encode(mMavlinkPassthrough->get_target_sysid(), mMavlinkPassthrough->get_target_compid(), &mavGpsGlobalOriginMsg, &mavGpsGlobalOrigin);
+    if (mMavlinkPassthrough->send_message(mavGpsGlobalOriginMsg) != mavsdk::MavlinkPassthrough::Result::Success)
+        qDebug() << "Warning: could not send GPS_GLOBAL_ORIGIN via MAVLINK.";
+    else
+        qDebug() << "Sent GPS_GLOBAL_ORIGIN via MAVLINK:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
 }
 
 void MavsdkVehicleConnection::setConvertLocalPositionsToGlobalBeforeSending(bool convertLocalPositionsToGlobalBeforeSending)

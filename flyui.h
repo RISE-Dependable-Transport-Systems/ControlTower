@@ -20,6 +20,7 @@ public:
     ~FlyUI();
 
     void setCurrentVehicleConnection(const QSharedPointer<MavsdkVehicleConnection> &currentVehicleConnection);
+    QSharedPointer<MavsdkVehicleConnection> getCurrentVehicleConnection() const;
     QSharedPointer<MapModule> getGotoClickOnMapModule();
 
 public slots:
@@ -48,6 +49,8 @@ private slots:
 
     void on_apStopButton_clicked();
 
+
+    void on_precisionLandButton_clicked();
 
 private:
     class GotoClickOnMapModule : public MapModule {

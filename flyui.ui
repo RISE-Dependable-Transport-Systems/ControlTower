@@ -75,6 +75,13 @@
     </widget>
    </item>
    <item>
+    <widget class="QPushButton" name="precisionLandButton">
+     <property name="text">
+      <string>Precision Land</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="Line" name="line">
      <property name="frameShadow">
       <enum>QFrame::Sunken</enum>
