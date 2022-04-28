@@ -52,7 +52,6 @@ if(ANDROID)
     sdvp_qtcommon/userinterface/map/tracemodule.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.cpp
-    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.cpp
     sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.cpp
@@ -107,7 +106,6 @@ else()
     sdvp_qtcommon/userinterface/map/tracemodule.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.cpp
-    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.cpp
     sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.h
     sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.cpp
