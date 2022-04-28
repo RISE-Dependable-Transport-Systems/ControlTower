@@ -180,25 +180,25 @@
   <customwidget>
    <class>FlyUI</class>
    <extends>QWidget</extends>
-   <header>flyui.h</header>
+   <header>userinterface/flyui.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>PlanUI</class>
    <extends>QWidget</extends>
-   <header>planui.h</header>
+   <header>userinterface/planui.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>UbloxBasestationUI</class>
    <extends>QWidget</extends>
-   <header>ubloxbasestationui.h</header>
+   <header>userinterface/ubloxbasestationui.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>TraceUI</class>
    <extends>QWidget</extends>
-   <header>traceui.h</header>
+   <header>userinterface/traceui.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

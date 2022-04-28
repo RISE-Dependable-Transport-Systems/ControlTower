@@ -34,28 +34,28 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    flyui.cpp
-    flyui.h
-    flyui.ui
-    planui.cpp
-    planui.h
-    planui.ui
-    traceui.cpp
-    traceui.h
-    traceui.ui
-    ubloxbasestationui.cpp
-    ubloxbasestationui.h
-    ubloxbasestationui.ui
-    routeplannermodule.cpp
-    routeplannermodule.h
-    tracemodule.cpp
-    tracemodule.h
-    mavsdkstation.h
-    mavsdkstation.cpp
-    sdvp_qtcommon/vehicleconnection.cpp
-    sdvp_qtcommon/vehicleconnection.h
-    mavsdkvehicleconnection.h
-    mavsdkvehicleconnection.cpp
+    sdvp_qtcommon/userinterface/flyui.cpp
+    sdvp_qtcommon/userinterface/flyui.h
+    sdvp_qtcommon/userinterface/flyui.ui
+    sdvp_qtcommon/userinterface/planui.cpp
+    sdvp_qtcommon/userinterface/planui.h
+    sdvp_qtcommon/userinterface/planui.ui
+    sdvp_qtcommon/userinterface/traceui.cpp
+    sdvp_qtcommon/userinterface/traceui.h
+    sdvp_qtcommon/userinterface/traceui.ui
+    sdvp_qtcommon/userinterface/ubloxbasestationui.cpp
+    sdvp_qtcommon/userinterface/ubloxbasestationui.h
+    sdvp_qtcommon/userinterface/ubloxbasestationui.ui
+    sdvp_qtcommon/userinterface/map/routeplannermodule.cpp
+    sdvp_qtcommon/userinterface/map/routeplannermodule.h
+    sdvp_qtcommon/userinterface/map/tracemodule.cpp
+    sdvp_qtcommon/userinterface/map/tracemodule.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.cpp
+    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.cpp
+    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.cpp
     sdvp_qtcommon/vehicles/objectstate.cpp
     sdvp_qtcommon/vehicles/objectstate.h
     sdvp_qtcommon/vehicles/vehiclestate.cpp
@@ -89,28 +89,28 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    flyui.cpp
-    flyui.h
-    flyui.ui
-    planui.cpp
-    planui.h
-    planui.ui
-    traceui.cpp
-    traceui.h
-    traceui.ui
-    ubloxbasestationui.cpp
-    ubloxbasestationui.h
-    ubloxbasestationui.ui
-    routeplannermodule.cpp
-    routeplannermodule.h
-    tracemodule.cpp
-    tracemodule.h
-    mavsdkstation.h
-    mavsdkstation.cpp
-    sdvp_qtcommon/vehicleconnection.cpp
-    sdvp_qtcommon/vehicleconnection.h
-    mavsdkvehicleconnection.h
-    mavsdkvehicleconnection.cpp
+    sdvp_qtcommon/userinterface/flyui.cpp
+    sdvp_qtcommon/userinterface/flyui.h
+    sdvp_qtcommon/userinterface/flyui.ui
+    sdvp_qtcommon/userinterface/planui.cpp
+    sdvp_qtcommon/userinterface/planui.h
+    sdvp_qtcommon/userinterface/planui.ui
+    sdvp_qtcommon/userinterface/traceui.cpp
+    sdvp_qtcommon/userinterface/traceui.h
+    sdvp_qtcommon/userinterface/traceui.ui
+    sdvp_qtcommon/userinterface/ubloxbasestationui.cpp
+    sdvp_qtcommon/userinterface/ubloxbasestationui.h
+    sdvp_qtcommon/userinterface/ubloxbasestationui.ui
+    sdvp_qtcommon/userinterface/map/routeplannermodule.cpp
+    sdvp_qtcommon/userinterface/map/routeplannermodule.h
+    sdvp_qtcommon/userinterface/map/tracemodule.cpp
+    sdvp_qtcommon/userinterface/map/tracemodule.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkstation.cpp
+    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.cpp
+    sdvp_qtcommon/communication/vehicleconnections/vehicleconnection.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.h
+    sdvp_qtcommon/communication/vehicleconnections/mavsdkvehicleconnection.cpp
     sdvp_qtcommon/vehicles/objectstate.cpp
     sdvp_qtcommon/vehicles/objectstate.h
     sdvp_qtcommon/vehicles/vehiclestate.cpp

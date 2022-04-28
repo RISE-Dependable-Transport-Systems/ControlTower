@@ -2,9 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "flyui.h"
+#include "userinterface/flyui.h"
 #include <mavsdk/plugins/telemetry/telemetry.h>
-#include "mavsdkstation.h"
+#include "communication/vehicleconnections/mavsdkstation.h"
 #include "sensors/gnss/ublox_basestation.h"
 
 QT_BEGIN_NAMESPACE
