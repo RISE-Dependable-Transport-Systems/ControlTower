@@ -1,5 +1,5 @@
 #include "mavsdkvehicleconnection.h"
-#include "sdvp_qtcommon/copterstate.h"
+#include "vehicles/copterstate.h"
 #include <QDebug>
 #include <QDateTime>
 

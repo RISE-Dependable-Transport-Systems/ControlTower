@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <QSharedPointer>
 #include "mavsdkvehicleconnection.h"
-#include "sdvp_qtcommon/waypointfollower.h"
-#include "sdvp_qtcommon/mapwidget.h"
+#include "autopilot/waypointfollower.h"
+#include "userinterface/map/mapwidget.h"
 
 namespace Ui {
 class FlyUI;

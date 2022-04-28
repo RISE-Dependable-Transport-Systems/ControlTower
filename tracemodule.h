@@ -1,8 +1,8 @@
 #ifndef TRACEMODULE_H
 #define TRACEMODULE_H
 
-#include "sdvp_qtcommon/mapwidget.h"
-#include "sdvp_qtcommon/pospoint.h"
+#include "userinterface/map/mapwidget.h"
+#include "core/pospoint.h"
 
 class TraceModule : public MapModule
 {

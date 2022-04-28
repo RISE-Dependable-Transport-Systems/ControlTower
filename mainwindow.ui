@@ -174,7 +174,7 @@
   <customwidget>
    <class>MapWidget</class>
    <extends>QWidget</extends>
-   <header>sdvp_qtcommon/mapwidget.h</header>
+   <header>userinterface/map/mapwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>

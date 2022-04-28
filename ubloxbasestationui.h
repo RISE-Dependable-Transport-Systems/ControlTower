@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QSharedPointer>
-#include "sdvp_qtcommon/gnss/ublox_basestation.h"
+#include "sensors/gnss/ublox_basestation.h"
 
 namespace Ui {
 class UbloxBasestationUI;

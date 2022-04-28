@@ -56,31 +56,31 @@ if(ANDROID)
     sdvp_qtcommon/vehicleconnection.h
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
-    sdvp_qtcommon/objectstate.cpp
-    sdvp_qtcommon/objectstate.h
-    sdvp_qtcommon/vehiclestate.cpp
-    sdvp_qtcommon/vehiclestate.h
-    sdvp_qtcommon/copterstate.cpp
-    sdvp_qtcommon/copterstate.h
-    sdvp_qtcommon/movementcontroller.cpp
-    sdvp_qtcommon/movementcontroller.h
-    sdvp_qtcommon/waypointfollower.cpp
-    sdvp_qtcommon/waypointfollower.h
-    sdvp_qtcommon/coordinatetransforms.h
-    sdvp_qtcommon/mapwidget.cpp
-    sdvp_qtcommon/mapwidget.h
-    sdvp_qtcommon/osmclient.cpp
-    sdvp_qtcommon/osmclient.h
-    sdvp_qtcommon/osmtile.cpp
-    sdvp_qtcommon/osmtile.h
-    sdvp_qtcommon/pospoint.cpp
-    sdvp_qtcommon/pospoint.h
-    sdvp_qtcommon/gnss/rtcm3_simple.cpp
-    sdvp_qtcommon/gnss/rtcm3_simple.h
-    sdvp_qtcommon/gnss/ublox.cpp
-    sdvp_qtcommon/gnss/ublox.h
-    sdvp_qtcommon/gnss/ublox_basestation.cpp
-    sdvp_qtcommon/gnss/ublox_basestation.h
+    sdvp_qtcommon/vehicles/objectstate.cpp
+    sdvp_qtcommon/vehicles/objectstate.h
+    sdvp_qtcommon/vehicles/vehiclestate.cpp
+    sdvp_qtcommon/vehicles/vehiclestate.h
+    sdvp_qtcommon/vehicles/copterstate.cpp
+    sdvp_qtcommon/vehicles/copterstate.h
+    sdvp_qtcommon/vehicles/controller/movementcontroller.cpp
+    sdvp_qtcommon/vehicles/controller/movementcontroller.h
+    sdvp_qtcommon/autopilot/waypointfollower.cpp
+    sdvp_qtcommon/autopilot/waypointfollower.h
+    sdvp_qtcommon/core/coordinatetransforms.h
+    sdvp_qtcommon/userinterface/map/mapwidget.cpp
+    sdvp_qtcommon/userinterface/map/mapwidget.h
+    sdvp_qtcommon/userinterface/map/osmclient.cpp
+    sdvp_qtcommon/userinterface/map/osmclient.h
+    sdvp_qtcommon/userinterface/map/osmtile.cpp
+    sdvp_qtcommon/userinterface/map/osmtile.h
+    sdvp_qtcommon/core/pospoint.cpp
+    sdvp_qtcommon/core/pospoint.h
+    sdvp_qtcommon/sensors/gnss/rtcm3_simple.cpp
+    sdvp_qtcommon/sensors/gnss/rtcm3_simple.h
+    sdvp_qtcommon/sensors/gnss/ublox.cpp
+    sdvp_qtcommon/sensors/gnss/ublox.h
+    sdvp_qtcommon/sensors/gnss/ublox_basestation.cpp
+    sdvp_qtcommon/sensors/gnss/ublox_basestation.h
   )
 else()
   add_executable(ControlTower
@@ -111,33 +111,35 @@ else()
     sdvp_qtcommon/vehicleconnection.h
     mavsdkvehicleconnection.h
     mavsdkvehicleconnection.cpp
-    sdvp_qtcommon/objectstate.cpp
-    sdvp_qtcommon/objectstate.h
-    sdvp_qtcommon/vehiclestate.cpp
-    sdvp_qtcommon/vehiclestate.h
-    sdvp_qtcommon/copterstate.cpp
-    sdvp_qtcommon/copterstate.h
-    sdvp_qtcommon/movementcontroller.cpp
-    sdvp_qtcommon/movementcontroller.h
-    sdvp_qtcommon/waypointfollower.cpp
-    sdvp_qtcommon/waypointfollower.h
-    sdvp_qtcommon/coordinatetransforms.h
-    sdvp_qtcommon/mapwidget.cpp
-    sdvp_qtcommon/mapwidget.h
-    sdvp_qtcommon/osmclient.cpp
-    sdvp_qtcommon/osmclient.h
-    sdvp_qtcommon/osmtile.cpp
-    sdvp_qtcommon/osmtile.h
-    sdvp_qtcommon/pospoint.cpp
-    sdvp_qtcommon/pospoint.h
-    sdvp_qtcommon/gnss/rtcm3_simple.cpp
-    sdvp_qtcommon/gnss/rtcm3_simple.h
-    sdvp_qtcommon/gnss/ublox.cpp
-    sdvp_qtcommon/gnss/ublox.h
-    sdvp_qtcommon/gnss/ublox_basestation.cpp
-    sdvp_qtcommon/gnss/ublox_basestation.h
+    sdvp_qtcommon/vehicles/objectstate.cpp
+    sdvp_qtcommon/vehicles/objectstate.h
+    sdvp_qtcommon/vehicles/vehiclestate.cpp
+    sdvp_qtcommon/vehicles/vehiclestate.h
+    sdvp_qtcommon/vehicles/copterstate.cpp
+    sdvp_qtcommon/vehicles/copterstate.h
+    sdvp_qtcommon/vehicles/controller/movementcontroller.cpp
+    sdvp_qtcommon/vehicles/controller/movementcontroller.h
+    sdvp_qtcommon/autopilot/waypointfollower.cpp
+    sdvp_qtcommon/autopilot/waypointfollower.h
+    sdvp_qtcommon/core/coordinatetransforms.h
+    sdvp_qtcommon/userinterface/map/mapwidget.cpp
+    sdvp_qtcommon/userinterface/map/mapwidget.h
+    sdvp_qtcommon/userinterface/map/osmclient.cpp
+    sdvp_qtcommon/userinterface/map/osmclient.h
+    sdvp_qtcommon/userinterface/map/osmtile.cpp
+    sdvp_qtcommon/userinterface/map/osmtile.h
+    sdvp_qtcommon/core/pospoint.cpp
+    sdvp_qtcommon/core/pospoint.h
+    sdvp_qtcommon/sensors/gnss/rtcm3_simple.cpp
+    sdvp_qtcommon/sensors/gnss/rtcm3_simple.h
+    sdvp_qtcommon/sensors/gnss/ublox.cpp
+    sdvp_qtcommon/sensors/gnss/ublox.h
+    sdvp_qtcommon/sensors/gnss/ublox_basestation.cpp
+    sdvp_qtcommon/sensors/gnss/ublox_basestation.h
   )
 endif()
+
+target_include_directories(ControlTower PRIVATE sdvp_qtcommon/)
 
 target_link_libraries(ControlTower
     PRIVATE Qt5::Widgets

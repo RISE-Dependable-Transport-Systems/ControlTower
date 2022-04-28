@@ -5,7 +5,7 @@
 #include "flyui.h"
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include "mavsdkstation.h"
-#include "sdvp_qtcommon/gnss/ublox_basestation.h"
+#include "sensors/gnss/ublox_basestation.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }

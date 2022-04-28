@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QSharedPointer>
-#include "sdvp_qtcommon/vehiclestate.h"
+#include "vehicles/vehiclestate.h"
 #include "tracemodule.h"
 
 namespace Ui {

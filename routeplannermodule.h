@@ -1,7 +1,7 @@
 #ifndef ROUTEPLANNERMODULE_H
 #define ROUTEPLANNERMODULE_H
 
-#include "sdvp_qtcommon/mapwidget.h"
+#include "userinterface/map/mapwidget.h"
 
 class RoutePlannerModule : public MapModule
 {

@@ -2,10 +2,10 @@
 #define MAVSDKVEHICLECONNECTION_H
 
 #include <QSharedPointer>
-#include "sdvp_qtcommon/vehicleconnection.h"
-#include "sdvp_qtcommon/vehiclestate.h"
-#include "sdvp_qtcommon/coordinatetransforms.h"
-#include "sdvp_qtcommon/waypointfollower.h"
+#include "vehicleconnection.h"
+#include "vehicles/vehiclestate.h"
+#include "core/coordinatetransforms.h"
+#include "autopilot/waypointfollower.h"
 #include <mavsdk/mavsdk.h>
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include <mavsdk/plugins/action/action.h>

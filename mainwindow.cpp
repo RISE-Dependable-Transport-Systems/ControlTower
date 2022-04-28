@@ -3,8 +3,8 @@
 #include <QSerialPort>
 #include <QThread>
 #include <QStyleFactory>
-#include "sdvp_qtcommon/pospoint.h"
-#include "sdvp_qtcommon/copterstate.h"
+#include "core/pospoint.h"
+#include "vehicles/copterstate.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
