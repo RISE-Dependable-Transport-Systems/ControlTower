@@ -19,6 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
     ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
+    ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
@@ -42,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
         ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
+        if (vehicleConnection->hasGimbal())
+            ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
     });
 

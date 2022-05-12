@@ -8,5 +8,6 @@
         <file>icons/icons8-gps-signal-96.png</file>
         <file>icons/icons8-itinerary-96.png</file>
         <file>icons/icons8-video-record-96.png</file>
+        <file>icons/icons8-compact-camera-96.png</file>
     </qresource>
 </RCC>

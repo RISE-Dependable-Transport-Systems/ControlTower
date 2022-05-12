@@ -40,6 +40,9 @@ if(ANDROID)
     WayWise/userinterface/planui.cpp
     WayWise/userinterface/planui.h
     WayWise/userinterface/planui.ui
+    WayWise/userinterface/cameragimbalui.cpp
+    WayWise/userinterface/cameragimbalui.h
+    WayWise/userinterface/cameragimbalui.ui
     WayWise/userinterface/traceui.cpp
     WayWise/userinterface/traceui.h
     WayWise/userinterface/traceui.ui
@@ -74,6 +77,9 @@ if(ANDROID)
     WayWise/userinterface/map/osmtile.h
     WayWise/core/pospoint.cpp
     WayWise/core/pospoint.h
+    WayWise/sensors/camera/gimbal.h
+    WayWise/sensors/camera/mavsdkgimbal.cpp
+    WayWise/sensors/camera/mavsdkgimbal.h
     WayWise/sensors/gnss/rtcm3_simple.cpp
     WayWise/sensors/gnss/rtcm3_simple.h
     WayWise/sensors/gnss/ublox.cpp
@@ -94,6 +100,9 @@ else()
     WayWise/userinterface/planui.cpp
     WayWise/userinterface/planui.h
     WayWise/userinterface/planui.ui
+    WayWise/userinterface/cameragimbalui.cpp
+    WayWise/userinterface/cameragimbalui.h
+    WayWise/userinterface/cameragimbalui.ui
     WayWise/userinterface/traceui.cpp
     WayWise/userinterface/traceui.h
     WayWise/userinterface/traceui.ui
@@ -128,6 +137,9 @@ else()
     WayWise/userinterface/map/osmtile.h
     WayWise/core/pospoint.cpp
     WayWise/core/pospoint.h
+    WayWise/sensors/camera/gimbal.h
+    WayWise/sensors/camera/mavsdkgimbal.cpp
+    WayWise/sensors/camera/mavsdkgimbal.h
     WayWise/sensors/gnss/rtcm3_simple.cpp
     WayWise/sensors/gnss/rtcm3_simple.h
     WayWise/sensors/gnss/ublox.cpp

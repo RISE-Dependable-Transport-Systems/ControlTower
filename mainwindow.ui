@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1617</width>
+    <width>1767</width>
     <height>1035</height>
    </rect>
   </property>
@@ -14,7 +14,7 @@
    <string>Control Tower</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="lineWidth">
@@ -49,6 +49,12 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>320</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="tabPosition">
         <enum>QTabWidget::North</enum>
@@ -119,6 +125,23 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="cameraTab">
+        <attribute name="icon">
+         <iconset resource="resources.qrc">
+          <normaloff>:/icons/icons/icons8-compact-camera-96.png</normaloff>:/icons/icons/icons8-compact-camera-96.png</iconset>
+        </attribute>
+        <attribute name="title">
+         <string/>
+        </attribute>
+        <attribute name="toolTip">
+         <string>Camera &amp; Gimbal</string>
+        </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <widget class="CameraGimbalUI" name="cameraGimbalUI" native="true"/>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="traceTab">
         <attribute name="icon">
          <iconset resource="resources.qrc">
@@ -163,7 +186,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1617</width>
+     <width>1767</width>
      <height>27</height>
     </rect>
    </property>
@@ -199,6 +222,12 @@
    <class>TraceUI</class>
    <extends>QWidget</extends>
    <header>userinterface/traceui.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CameraGimbalUI</class>
+   <extends>QWidget</extends>
+   <header>userinterface/cameragimbalui.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
