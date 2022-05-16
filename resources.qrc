@@ -9,5 +9,18 @@
         <file>icons/icons8-itinerary-96.png</file>
         <file>icons/icons8-video-record-96.png</file>
         <file>icons/icons8-compact-camera-96.png</file>
+        <file>icons/icons8-double-down-96.png</file>
+        <file>icons/icons8-double-left-96.png</file>
+        <file>icons/icons8-double-right-96.png</file>
+        <file>icons/icons8-double-up-96.png</file>
+        <file>icons/icons8-single-down-96.png</file>
+        <file>icons/icons8-single-left-96.png</file>
+        <file>icons/icons8-single-right-96.png</file>
+        <file>icons/icons8-single-up-96.png</file>
+        <file>icons/icons8-triple-down-96.png</file>
+        <file>icons/icons8-triple-left-96.png</file>
+        <file>icons/icons8-triple-right-96.png</file>
+        <file>icons/icons8-triple-up-96.png</file>
+        <file>icons/icons8-circle-96.png</file>
     </qresource>
 </RCC>
