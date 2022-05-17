@@ -43,8 +43,10 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
         ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
-        if (vehicleConnection->hasGimbal())
+        if (vehicleConnection->hasGimbal()) {
             ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
+            ui->cameraGimbalUI->setMavVehicleConnection(vehicleConnection); // refactor
+        }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
     });
 
@@ -73,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    });
 //    mPreclandTestTimer.start(200);
 
-    mMavsdkStation->startListeningUDP();
+    mMavsdkStation->startListeningUDP(14550);
 }
 
 MainWindow::~MainWindow()
