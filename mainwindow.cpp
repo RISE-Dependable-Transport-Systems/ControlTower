@@ -29,9 +29,12 @@ MainWindow::MainWindow(QWidget *parent)
         // Note: single connection assumed for now
         // If basestation is not running: vehicle home -> ENU reference (Basestation position -> ENU reference, otherwise)
         connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, [this](const llh_t &homePositionLlh){
-            if (!ui->ubloxBasestationUI->isBasestationRunning())
+            static bool enuRefUnset = true;
+            if (!ui->ubloxBasestationUI->isBasestationRunning() && enuRefUnset) {
                 ui->mapWidget->setEnuRef(homePositionLlh);
-//            qDebug() << "Home:" << homePositionLlh.latitude << homePositionLlh.longitude;
+                enuRefUnset = false;
+            }
+//            qDebug() << "Home:" << homePositionLlh.latitude << homePositionLlh.longitude << ", enuRefUnset:" << enuRefUnset;
         });
         // If basestation is running: ENU reference -> vehicle home
         // TODO: this needs to be offset (we do not want to land on the GNSS antenna), e.g., by using home at take off and moving with ENU
@@ -45,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
         if (vehicleConnection->hasGimbal()) {
             ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
-            ui->cameraGimbalUI->setMavVehicleConnection(vehicleConnection); // refactor
+            ui->cameraGimbalUI->setVehicleConnection(vehicleConnection);
         }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
     });
@@ -75,13 +78,15 @@ MainWindow::MainWindow(QWidget *parent)
 //    });
 //    mPreclandTestTimer.start(200);
 
-    mMavsdkStation->startListeningUDP(14550);
+    mMavsdkStation->startListeningUDP();
+//    mMavsdkStation->startListeningUDP(14550);
+
 }
 
 MainWindow::~MainWindow()
 {
     // Allow MAVSDK to finish
-    thread()->msleep(10);
+    thread()->msleep(100);
     delete ui;
 }
 
