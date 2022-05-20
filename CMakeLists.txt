@@ -49,6 +49,9 @@ if(ANDROID)
     WayWise/userinterface/ubloxbasestationui.cpp
     WayWise/userinterface/ubloxbasestationui.h
     WayWise/userinterface/ubloxbasestationui.ui
+    WayWise/userinterface/serialportdialog.cpp
+    WayWise/userinterface/serialportdialog.h
+    WayWise/userinterface/serialportdialog.ui
     WayWise/userinterface/map/routeplannermodule.cpp
     WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
@@ -109,6 +112,9 @@ else()
     WayWise/userinterface/ubloxbasestationui.cpp
     WayWise/userinterface/ubloxbasestationui.h
     WayWise/userinterface/ubloxbasestationui.ui
+    WayWise/userinterface/serialportdialog.cpp
+    WayWise/userinterface/serialportdialog.h
+    WayWise/userinterface/serialportdialog.ui
     WayWise/userinterface/map/routeplannermodule.cpp
     WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp

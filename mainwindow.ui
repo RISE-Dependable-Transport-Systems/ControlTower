@@ -190,8 +190,26 @@
      <height>27</height>
     </rect>
    </property>
+   <widget class="QMenu" name="fileMenu">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="addUdpConnectionAction"/>
+    <addaction name="AddSerialConnectionAction"/>
+   </widget>
+   <addaction name="fileMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="addUdpConnectionAction">
+   <property name="text">
+    <string>Add UDP connection...</string>
+   </property>
+  </action>
+  <action name="AddSerialConnectionAction">
+   <property name="text">
+    <string>Add serial connection...</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

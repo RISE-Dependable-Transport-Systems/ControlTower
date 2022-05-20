@@ -121,3 +121,11 @@ void MainWindow::setDarkStyle()
 
     qApp->setPalette(darkPalette);
 }
+
+void MainWindow::on_AddSerialConnectionAction_triggered()
+{
+    if (mSerialPortDialog.isNull())
+        mSerialPortDialog = QSharedPointer<SerialPortDialog>::create(this);
+
+    mSerialPortDialog->show();
+}
