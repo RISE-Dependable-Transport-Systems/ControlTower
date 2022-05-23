@@ -124,8 +124,10 @@ void MainWindow::setDarkStyle()
 
 void MainWindow::on_AddSerialConnectionAction_triggered()
 {
-    if (mSerialPortDialog.isNull())
+    if (mSerialPortDialog.isNull()) {
         mSerialPortDialog = QSharedPointer<SerialPortDialog>::create(this);
+        connect(mSerialPortDialog.get(), &SerialPortDialog::selectedSerialPort, mMavsdkStation.get(), &MavsdkStation::startListeningSerial);
+    }
 
     mSerialPortDialog->show();
 }
