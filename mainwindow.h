@@ -23,6 +23,8 @@ public:
 private slots:
     void on_AddSerialConnectionAction_triggered();
 
+    void on_addUdpConnectionAction_triggered();
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;

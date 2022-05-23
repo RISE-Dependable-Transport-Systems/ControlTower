@@ -131,3 +131,12 @@ void MainWindow::on_AddSerialConnectionAction_triggered()
 
     mSerialPortDialog->show();
 }
+
+void MainWindow::on_addUdpConnectionAction_triggered()
+{
+    bool ok;
+    int i = QInputDialog::getInt(this, tr("Add UDP connection..."),
+                                 tr("UDP port to listen on:"), 14550, std::numeric_limits<int>::min(), std::numeric_limits<int>::max(), 1, &ok);
+    if (ok)
+        mMavsdkStation->startListeningUDP(i);
+}
