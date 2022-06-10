@@ -34,26 +34,15 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    WayWise/userinterface/flyui.cpp
-    WayWise/userinterface/flyui.h
-    WayWise/userinterface/flyui.ui
-    WayWise/userinterface/planui.cpp
-    WayWise/userinterface/planui.h
-    WayWise/userinterface/planui.ui
     WayWise/userinterface/cameragimbalui.cpp
     WayWise/userinterface/cameragimbalui.h
     WayWise/userinterface/cameragimbalui.ui
     WayWise/userinterface/traceui.cpp
     WayWise/userinterface/traceui.h
     WayWise/userinterface/traceui.ui
-    WayWise/userinterface/ubloxbasestationui.cpp
-    WayWise/userinterface/ubloxbasestationui.h
-    WayWise/userinterface/ubloxbasestationui.ui
     WayWise/userinterface/serialportdialog.cpp
     WayWise/userinterface/serialportdialog.h
     WayWise/userinterface/serialportdialog.ui
-    WayWise/userinterface/map/routeplannermodule.cpp
-    WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
     WayWise/userinterface/map/tracemodule.h
     WayWise/communication/vehicleconnections/mavsdkstation.h
@@ -83,12 +72,6 @@ if(ANDROID)
     WayWise/sensors/camera/gimbal.h
     WayWise/sensors/camera/mavsdkgimbal.cpp
     WayWise/sensors/camera/mavsdkgimbal.h
-    WayWise/sensors/gnss/rtcm3_simple.cpp
-    WayWise/sensors/gnss/rtcm3_simple.h
-    WayWise/sensors/gnss/ublox.cpp
-    WayWise/sensors/gnss/ublox.h
-    WayWise/sensors/gnss/ublox_basestation.cpp
-    WayWise/sensors/gnss/ublox_basestation.h
   )
 else()
   add_executable(ControlTower
@@ -97,26 +80,15 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    WayWise/userinterface/flyui.cpp
-    WayWise/userinterface/flyui.h
-    WayWise/userinterface/flyui.ui
-    WayWise/userinterface/planui.cpp
-    WayWise/userinterface/planui.h
-    WayWise/userinterface/planui.ui
     WayWise/userinterface/cameragimbalui.cpp
     WayWise/userinterface/cameragimbalui.h
     WayWise/userinterface/cameragimbalui.ui
     WayWise/userinterface/traceui.cpp
     WayWise/userinterface/traceui.h
     WayWise/userinterface/traceui.ui
-    WayWise/userinterface/ubloxbasestationui.cpp
-    WayWise/userinterface/ubloxbasestationui.h
-    WayWise/userinterface/ubloxbasestationui.ui
     WayWise/userinterface/serialportdialog.cpp
     WayWise/userinterface/serialportdialog.h
     WayWise/userinterface/serialportdialog.ui
-    WayWise/userinterface/map/routeplannermodule.cpp
-    WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
     WayWise/userinterface/map/tracemodule.h
     WayWise/communication/vehicleconnections/mavsdkstation.h
@@ -146,12 +118,6 @@ else()
     WayWise/sensors/camera/gimbal.h
     WayWise/sensors/camera/mavsdkgimbal.cpp
     WayWise/sensors/camera/mavsdkgimbal.h
-    WayWise/sensors/gnss/rtcm3_simple.cpp
-    WayWise/sensors/gnss/rtcm3_simple.h
-    WayWise/sensors/gnss/ublox.cpp
-    WayWise/sensors/gnss/ublox.h
-    WayWise/sensors/gnss/ublox_basestation.cpp
-    WayWise/sensors/gnss/ublox_basestation.h
   )
 endif()
 

@@ -16,9 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);
-    ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
-    ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
     ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
@@ -30,7 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
         // If basestation is not running: vehicle home -> ENU reference (Basestation position -> ENU reference, otherwise)
         connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, [this](const llh_t &homePositionLlh){
             static bool enuRefUnset = true;
-            if (!ui->ubloxBasestationUI->isBasestationRunning() && enuRefUnset) {
+            if (enuRefUnset) {
                 ui->mapWidget->setEnuRef(homePositionLlh);
                 enuRefUnset = false;
             }
@@ -53,14 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->cameraGimbalUI->setGimbal(gimbal);
             });
 
-        ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
     });
 
-    connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
-    connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
-    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
 
     // TODO: for testing precland
     // should be ubloxrover (RELPOSNED) + offset -> landing target

@@ -5,7 +5,6 @@
 #include "userinterface/flyui.h"
 #include <mavsdk/plugins/telemetry/telemetry.h>
 #include "communication/vehicleconnections/mavsdkstation.h"
-#include "sensors/gnss/ublox_basestation.h"
 #include "userinterface/serialportdialog.h"
 
 QT_BEGIN_NAMESPACE
@@ -28,7 +27,6 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;
-    UbloxBasestation mUbloxBasestation;
     QTimer mPreclandTestTimer;
     QSharedPointer<SerialPortDialog> mSerialPortDialog;
 
