@@ -24,7 +24,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #    endif()
 #endif()
 
-find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort Multimedia MultimediaWidgets REQUIRED)
+find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort Multimedia MultimediaWidgets Gamepad REQUIRED)
 find_package(MAVSDK REQUIRED)
 
 if(ANDROID)
@@ -164,5 +164,6 @@ target_link_libraries(ControlTower
     PRIVATE Qt5::SerialPort
     PRIVATE Qt5::Multimedia
     PRIVATE Qt5::MultimediaWidgets
+    PRIVATE Qt5::Gamepad
     PRIVATE MAVSDK::mavsdk
 )

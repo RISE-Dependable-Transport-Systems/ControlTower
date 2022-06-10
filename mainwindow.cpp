@@ -36,21 +36,25 @@ MainWindow::MainWindow(QWidget *parent)
             }
 //            qDebug() << "Home:" << homePositionLlh.latitude << homePositionLlh.longitude << ", enuRefUnset:" << enuRefUnset;
         });
+
         // If basestation is running: ENU reference -> vehicle home
         // TODO: this needs to be offset (we do not want to land on the GNSS antenna), e.g., by using home at take off and moving with ENU
 //        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::setHomeLlh);
-        // TODO: Gps Origin seems to be set at boot and not be updated (i.e., not follow vehicle home)
-//        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::sendSetGpsOriginLlh);
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
-        ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
-        if (vehicleConnection->hasGimbal()) {
+
+        ui->cameraGimbalUI->setVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+        if (vehicleConnection->hasGimbal())
             ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
-            ui->cameraGimbalUI->setVehicleConnection(vehicleConnection);
-        }
-        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+        else // Gimbal might be available, but not detected yet
+            connect(vehicleConnection.get(), &MavsdkVehicleConnection::detectedGimbal, [&](QSharedPointer<Gimbal> gimbal){
+                ui->cameraGimbalUI->setGimbal(gimbal);
+            });
+
+        ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
     });
 
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
