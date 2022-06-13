@@ -52,6 +52,11 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
+        connect(vehicleConnection.get(), &MavsdkVehicleConnection::updatedBatteryState, [&](float voltage, float percentRemaining){
+            Q_UNUSED(percentRemaining)
+            QString statusBarMessage = QString("Reported battery voltage: %1 V").arg(voltage);
+            this->statusBar()->showMessage(statusBarMessage);
+        });
     });
 
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
@@ -76,7 +81,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    });
 //    mPreclandTestTimer.start(200);
 
-    mMavsdkStation->startListeningUDP();
+//    mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningUDP(14550);
 
 }
