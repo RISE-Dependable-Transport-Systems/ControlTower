@@ -67,10 +67,9 @@ if(ANDROID)
     WayWise/vehicles/vehiclestate.h
     WayWise/vehicles/copterstate.cpp
     WayWise/vehicles/copterstate.h
-    WayWise/vehicles/controller/movementcontroller.cpp
-    WayWise/vehicles/controller/movementcontroller.h
-    WayWise/autopilot/waypointfollower.cpp
     WayWise/autopilot/waypointfollower.h
+    WayWise/autopilot/gotowaypointfollower.cpp
+    WayWise/autopilot/gotowaypointfollower.h
     WayWise/core/coordinatetransforms.h
     WayWise/userinterface/map/mapwidget.cpp
     WayWise/userinterface/map/mapwidget.h
@@ -130,10 +129,9 @@ else()
     WayWise/vehicles/vehiclestate.h
     WayWise/vehicles/copterstate.cpp
     WayWise/vehicles/copterstate.h
-    WayWise/vehicles/controller/movementcontroller.cpp
-    WayWise/vehicles/controller/movementcontroller.h
-    WayWise/autopilot/waypointfollower.cpp
     WayWise/autopilot/waypointfollower.h
+    WayWise/autopilot/gotowaypointfollower.cpp
+    WayWise/autopilot/gotowaypointfollower.h
     WayWise/core/coordinatetransforms.h
     WayWise/userinterface/map/mapwidget.cpp
     WayWise/userinterface/map/mapwidget.h
