@@ -28,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent)
 
         // Note: single connection assumed for now
         // If basestation is not running: vehicle home -> ENU reference (Basestation position -> ENU reference, otherwise)
+        // TODO: should be GpsOrigin -> ENU reference
         connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, [this](const llh_t &homePositionLlh){
             static bool enuRefUnset = true;
             if (!ui->ubloxBasestationUI->isBasestationRunning() && enuRefUnset) {
@@ -53,7 +54,13 @@ MainWindow::MainWindow(QWidget *parent)
                 ui->cameraGimbalUI->setGimbal(gimbal);
             });
 
-        ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+        if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
+            ui->tabWidget->removeTab(1); // remove flyUi
+            ui->driveUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+        } else {
+            ui->tabWidget->removeTab(0); // remove driveUi
+            ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+        }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
     });
 
@@ -61,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+    connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
 
     // TODO: for testing precland
     // should be ubloxrover (RELPOSNED) + offset -> landing target

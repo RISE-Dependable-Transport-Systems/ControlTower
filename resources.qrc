@@ -22,5 +22,6 @@
         <file>icons/icons8-triple-right-96.png</file>
         <file>icons/icons8-triple-up-96.png</file>
         <file>icons/icons8-circle-96.png</file>
+        <file>icons/Car-96.png</file>
     </qresource>
 </RCC>

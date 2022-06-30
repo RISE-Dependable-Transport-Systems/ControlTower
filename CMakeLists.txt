@@ -34,6 +34,9 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    WayWise/userinterface/driveui.cpp
+    WayWise/userinterface/driveui.h
+    WayWise/userinterface/driveui.ui
     WayWise/userinterface/flyui.cpp
     WayWise/userinterface/flyui.h
     WayWise/userinterface/flyui.ui
@@ -59,6 +62,7 @@ if(ANDROID)
     WayWise/communication/vehicleconnections/mavsdkstation.h
     WayWise/communication/vehicleconnections/mavsdkstation.cpp
     WayWise/communication/vehicleconnections/vehicleconnection.h
+    WayWise/communication/vehicleconnections/vehicleconnection.cpp
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.h
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.cpp
     WayWise/vehicles/objectstate.cpp
@@ -67,9 +71,15 @@ if(ANDROID)
     WayWise/vehicles/vehiclestate.h
     WayWise/vehicles/copterstate.cpp
     WayWise/vehicles/copterstate.h
+    WayWise/vehicles/carstate.cpp
+    WayWise/vehicles/carstate.h
     WayWise/autopilot/waypointfollower.h
     WayWise/autopilot/gotowaypointfollower.cpp
     WayWise/autopilot/gotowaypointfollower.h
+#    WayWise/vehicles/controller/movementcontroller.cpp
+#    WayWise/vehicles/controller/movementcontroller.h
+#    WayWise/autopilot/purepursuitwaypointfollower.cpp
+#    WayWise/autopilot/purepursuitwaypointfollower.h
     WayWise/core/coordinatetransforms.h
     WayWise/userinterface/map/mapwidget.cpp
     WayWise/userinterface/map/mapwidget.h
@@ -96,6 +106,9 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    WayWise/userinterface/driveui.cpp
+    WayWise/userinterface/driveui.h
+    WayWise/userinterface/driveui.ui
     WayWise/userinterface/flyui.cpp
     WayWise/userinterface/flyui.h
     WayWise/userinterface/flyui.ui
@@ -121,6 +134,7 @@ else()
     WayWise/communication/vehicleconnections/mavsdkstation.h
     WayWise/communication/vehicleconnections/mavsdkstation.cpp
     WayWise/communication/vehicleconnections/vehicleconnection.h
+    WayWise/communication/vehicleconnections/vehicleconnection.cpp
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.h
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.cpp
     WayWise/vehicles/objectstate.cpp
@@ -129,9 +143,15 @@ else()
     WayWise/vehicles/vehiclestate.h
     WayWise/vehicles/copterstate.cpp
     WayWise/vehicles/copterstate.h
+    WayWise/vehicles/carstate.cpp
+    WayWise/vehicles/carstate.h
     WayWise/autopilot/waypointfollower.h
     WayWise/autopilot/gotowaypointfollower.cpp
     WayWise/autopilot/gotowaypointfollower.h
+#    WayWise/vehicles/controller/movementcontroller.cpp
+#    WayWise/vehicles/controller/movementcontroller.h
+#    WayWise/autopilot/purepursuitwaypointfollower.cpp
+#    WayWise/autopilot/purepursuitwaypointfollower.h
     WayWise/core/coordinatetransforms.h
     WayWise/userinterface/map/mapwidget.cpp
     WayWise/userinterface/map/mapwidget.h
