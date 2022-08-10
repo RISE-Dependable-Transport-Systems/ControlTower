@@ -25,6 +25,8 @@ private slots:
 
     void on_addUdpConnectionAction_triggered();
 
+    void on_tabWidget_currentChanged(int index);
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;

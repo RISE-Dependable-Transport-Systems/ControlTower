@@ -152,3 +152,11 @@ void MainWindow::on_addUdpConnectionAction_triggered()
     if (ok)
         mMavsdkStation->startListeningUDP(i);
 }
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if (index == 0) // give keyboard to DriveUI for manual control when visible
+        ui->driveUI->grabKeyboard();
+    else
+        ui->driveUI->releaseKeyboard();
+}
