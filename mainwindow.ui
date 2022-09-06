@@ -187,7 +187,7 @@
      <x>0</x>
      <y>0</y>
      <width>1767</width>
-     <height>27</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -196,6 +196,7 @@
     </property>
     <addaction name="addUdpConnectionAction"/>
     <addaction name="AddSerialConnectionAction"/>
+    <addaction name="actionConnectToGazebo"/>
    </widget>
    <addaction name="fileMenu"/>
   </widget>
@@ -208,6 +209,11 @@
   <action name="AddSerialConnectionAction">
    <property name="text">
     <string>Add serial connection...</string>
+   </property>
+  </action>
+  <action name="actionConnectToGazebo">
+   <property name="text">
+    <string>Connect to Gazebo</string>
    </property>
   </action>
  </widget>

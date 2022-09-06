@@ -27,6 +27,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort Multimedia MultimediaWidgets REQUIRED)
 find_package(MAVSDK REQUIRED)
 
+
 if(ANDROID)
   add_library(ControlTower SHARED
     resources.qrc
@@ -34,6 +35,9 @@ if(ANDROID)
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    connecttogazebo.cpp
+    connecttogazebo.h
+    connecttogazebo.ui
     WayWise/userinterface/flyui.cpp
     WayWise/userinterface/flyui.h
     WayWise/userinterface/flyui.ui
@@ -97,6 +101,9 @@ else()
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    connecttogazebo.cpp
+    connecttogazebo.h
+    connecttogazebo.ui
     WayWise/userinterface/flyui.cpp
     WayWise/userinterface/flyui.h
     WayWise/userinterface/flyui.ui
@@ -119,6 +126,9 @@ else()
     WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
     WayWise/userinterface/map/tracemodule.h
+    WayWise/communication/TCPClient.h
+    WayWise/communication/TCPClient.cpp
+
     WayWise/communication/vehicleconnections/mavsdkstation.h
     WayWise/communication/vehicleconnections/mavsdkstation.cpp
     WayWise/communication/vehicleconnections/vehicleconnection.h
@@ -166,3 +176,5 @@ target_link_libraries(ControlTower
     PRIVATE Qt5::MultimediaWidgets
     PRIVATE MAVSDK::mavsdk
 )
+
+

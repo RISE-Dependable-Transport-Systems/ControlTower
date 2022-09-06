@@ -7,6 +7,9 @@
 #include "communication/vehicleconnections/mavsdkstation.h"
 #include "sensors/gnss/ublox_basestation.h"
 #include "userinterface/serialportdialog.h"
+#include "connecttogazebo.h"
+#include "communication/TCPClient.h"
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -22,15 +25,21 @@ public:
 
 private slots:
     void on_AddSerialConnectionAction_triggered();
+    void on_actionConnectToGazebo_triggered();
 
     void on_addUdpConnectionAction_triggered();
 
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;
+    QSharedPointer<TCPClient> mTcpClient;
+
     UbloxBasestation mUbloxBasestation;
     QTimer mPreclandTestTimer;
     QSharedPointer<SerialPortDialog> mSerialPortDialog;
+    QSharedPointer<ConnectToGazebo> mGazeboDialog;
+
+    
 
     void newMavsdkSystem();
     void setDarkStyle();
