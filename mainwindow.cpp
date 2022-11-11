@@ -27,15 +27,14 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
 
         // Note: single connection assumed for now
-        // If basestation is not running: vehicle home -> ENU reference (Basestation position -> ENU reference, otherwise)
-        // TODO: should be GpsOrigin -> ENU reference
-        connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleHomeLlh, [this](const llh_t &homePositionLlh){
+        // If basestation is not running: GpsOrigin -> ENU reference (Basestation position -> ENU reference, otherwise)
+        connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleGpsOriginLlh, [this](const llh_t &gpsOriginLlh){
             static bool enuRefUnset = true;
             if (!ui->ubloxBasestationUI->isBasestationRunning() && enuRefUnset) {
-                ui->mapWidget->setEnuRef(homePositionLlh);
+                ui->mapWidget->setEnuRef(gpsOriginLlh);
                 enuRefUnset = false;
             }
-//            qDebug() << "Home:" << homePositionLlh.latitude << homePositionLlh.longitude << ", enuRefUnset:" << enuRefUnset;
+            qDebug() << "Gps origin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
         });
 
         // If basestation is running: ENU reference -> vehicle home
