@@ -3,8 +3,19 @@
 A ground control station based on [WayWise](https://github.com/RISE-Dependable-Transport-Systems/WayWise) and [MAVSDK](http://mavsdk.io/) that can control [PX4](https://px4.io/)-based drones and [WayWise](https://github.com/RISE-Dependable-Transport-Systems/WayWise)-based vehicles via MAVLINK.
 ControlTower was initially developed during the [LASH FIRE](https://lashfire.eu/) EU project to investigate the use of drones for fire prevention on ships (public report to be published beginning of 2023).
 
-MAVSDK commit 926b067 or newer is require for building, which will probably become MAVSDK 2.0. For the time being you need to build MAVSDK yourself or use the *.deb (Ubuntu 20.04) provided in the main folder of this repository.
+MAVSDK commit 926b067 or newer is require for building, which will probably become MAVSDK 2.0. For the time being you need to build MAVSDK yourself or use the *.deb (Ubuntu 20.04/22.04) provided in the main folder of this repository.
 
-### Funded by
+## Installing Prerequisites (on Ubuntu 20.04/22.04) & Building
+    sudo apt install git build-essential cmake qtcreator qtbase5-dev libqt5serialport5-dev qtmultimedia5-dev libqt5gamepad5-dev
+    git clone --recursive git@github.com:RISE-Dependable-Transport-Systems/ControlTower.git
+    
+    # In case you do not want to build MAVSDK (main branch) yourself:
+    sudo dpkg -i ControlTower/libmavsdk-dev_*_amd64.deb && sudo ln -s /usr/local/lib/libmavsdk.so.1.4.0 /usr/local/lib/libmavsdk.so.1
+    
+    mkdir build && cd build
+    cmake ../ControlTower
+    cmake --build . --parallel 
+    
+## Funded by
 <img src="https://user-images.githubusercontent.com/2404625/202213271-a4006999-49d5-4e61-9f3d-867a469238d1.png" width="80" height="54" align="left" alt="EU logo" />
 This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nº 814975
