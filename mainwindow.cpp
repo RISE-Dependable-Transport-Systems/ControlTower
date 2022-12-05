@@ -29,17 +29,15 @@ MainWindow::MainWindow(QWidget *parent)
         // Note: single connection assumed for now
         // If basestation is not running: GpsOrigin -> ENU reference (Basestation position -> ENU reference, otherwise)
         connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleGpsOriginLlh, [this](const llh_t &gpsOriginLlh){
-            static bool enuRefUnset = true;
-            if (!ui->ubloxBasestationUI->isBasestationRunning() && enuRefUnset) {
-                ui->mapWidget->setEnuRef(gpsOriginLlh);
-                enuRefUnset = false;
-            }
-            qDebug() << "Gps origin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
-        });
+            static llh_t lastGpsOriginLlh;
+            if (lastGpsOriginLlh.latitude != gpsOriginLlh.latitude || lastGpsOriginLlh.longitude != gpsOriginLlh.longitude)
+                if (!ui->ubloxBasestationUI->isBasestationRunning()) {
+                    ui->mapWidget->setEnuRef(gpsOriginLlh);
+                    qDebug() << "Updated ENU reference with received GpsOrigin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
 
-        // If basestation is running: ENU reference -> vehicle home
-        // TODO: this needs to be offset (we do not want to land on the GNSS antenna), e.g., by using home at take off and moving with ENU
-//        connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, vehicleConnection.get(), &MavsdkVehicleConnection::setHomeLlh);
+                    lastGpsOriginLlh = gpsOriginLlh;
+                }
+        });
 
         ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
@@ -68,26 +66,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-
-    // TODO: for testing precland
-    // should be ubloxrover (RELPOSNED) + offset -> landing target
-//    connect(&mPreclandTestTimer, &QTimer::timeout, [&](){
-//        static double x = 0.0;
-//        if(ui->flyUI->getCurrentVehicleConnection() && ui->flyUI->getCurrentVehicleConnection()->getVehicleState().dynamicCast<CopterState>()->getLandedState() == CopterState::LandedState::InAir){
-//            ui->flyUI->getCurrentVehicleConnection()->sendLandingTargetENU({x+=0.3, 1.0, 0.0});
-//            if (x < 50.0)
-//                ui->flyUI->getCurrentVehicleConnection()->requestGotoENU({x+0.5, 1.0, 30.0});
-//            else if (x >= 50.0 && x <= 51.0) {
-//                qDebug() << "Landing!";
-//                ui->flyUI->getCurrentVehicleConnection()->requestPrecisionLanding();
-//            }
-//        } else if (ui->flyUI->getCurrentVehicleConnection() && ui->flyUI->getCurrentVehicleConnection()->getVehicleState().dynamicCast<CopterState>()->getLandedState() == CopterState::LandedState::Landing)
-//            ui->flyUI->getCurrentVehicleConnection()->sendLandingTargetENU({x+=0.3, 1.0, 0.0});
-//        else
-//            x = 0.0;
-//        qDebug() << x;
-//    });
-//    mPreclandTestTimer.start(200);
 
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningUDP(14550);
