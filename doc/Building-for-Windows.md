@@ -15,7 +15,7 @@ Create a settings.mk file in /opt/mxe with the following contents:
 
 Build MXE, this will take a while:
 
-`make qtbase qtserialport qtgamepad qtmultimedia cmake`
+`make qtbase qtserialport qtgamepad qtmultimedia cmake curl jsoncpp tinyxml2`
 
 Make sure MXE is in $PATH by adding the following lines to ~/.bashrc (and starting a new shell session afterwards):
 
@@ -28,26 +28,15 @@ Make sure MXE is in $PATH by adding the following lines to ~/.bashrc (and starti
     git clone --recursive https://github.com/mavlink/MAVSDK.git
     mkdir -p ~/src/MAVSDK/build/win
 
-**TODO:** All following steps (including building ControlTower) are will lead to a working \*.exe file, but are hackish and will throw errors.
-Some hackish fix for building with MXE is to add the following lines to $USER/src/MAVSDKsrc/CMakeLists.txt right after "set(CMAKE_CXX_STANDARD_REQUIRED ON)". Make sure to replace "marvind" with your username:
-
-    set(CURL_LIBRARY /home/marvind/src/MAVSDK/build/win/third_party/install/lib)
-    set(CURL_INCLUDE_DIR /home/marvind/src/MAVSDK/build/win/third_party/install/include)
-    set(JsonCpp_LIBRARY /home/marvind/src/MAVSDK/build/win/third_party/install/lib)
-    set(JsonCpp_INCLUDE_DIR /home/marvind/src/MAVSDK/build/win/third_party/install/include)
-    set(TINYXML2_LIBRARY /home/marvind/src/MAVSDK/build/win/third_party/install/lib)
-    set(TINYXML2_INCLUDE_DIR /home/marvind/src/MAVSDK/build/win/third_party/install/include)
-
-Another fix for building with MXE (a headerfile that needs to be written lowercase):
+A quickfix for building with MXE (a headerfile that needs to be written lowercase instead of uppercase):
 
 `find ~/src/MAVSDK/src/mavsdk \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/Ws2tcpip\.h/ws2tcpip\.h/g'`
 
-Now run CMake:
+Now cmake should run successfully. THen you are ready to build and install MAVSDK:
 
     cd ~/src/MAVSDK/build/win
-    x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF ../..
+    x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSUPERBUILD=OFF ../..
     make -j5
-    cd src/mavsdk
     make install
 
 ## Build ControlTower using MXE
@@ -57,40 +46,21 @@ Now run CMake:
     mkdir -p ControlTower/win_build
     cd ControlTower/win_build
 
-A few lines need to be changed in ControlTower's CMakeLists.txt (in ~/src/ControlTower, as a result from errors during the MAVSDK build), this is the diff:
+A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). Here is the diff (add four lines enbaling PkgConfig and disable the if statement):
 
-    diff --git a/CMakeLists.txt b/CMakeLists.txt
-    index 1ed40f8..f523623 100644
-    --- a/CMakeLists.txt
-    +++ b/CMakeLists.txt
-    @@ -25,7 +25,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
-     #endif()
-     
-     find_package(Qt5 COMPONENTS Widgets Core Network PrintSupport SerialPort Multimedia MultimediaWidgets Gamepad REQUIRED)
-    -find_package(MAVSDK REQUIRED)
-    +#find_package(MAVSDK REQUIRED)
-     
-     add_executable(ControlTower
-         resources.qrc
-    @@ -108,6 +108,7 @@ add_executable(ControlTower
-     )
-     
-     target_include_directories(ControlTower PRIVATE WayWise/)
-    +target_include_directories(ControlTower PRIVATE /opt/mxe/usr/x86_64-w64-mingw32.static/include/mavsdk)
-     
-     target_link_libraries(ControlTower
-         PRIVATE Qt5::Widgets
-    @@ -117,5 +118,6 @@ target_link_libraries(ControlTower
-         PRIVATE Qt5::Multimedia
-         PRIVATE Qt5::MultimediaWidgets
-         PRIVATE Qt5::Gamepad
-    -    PRIVATE MAVSDK::mavsdk
-    +    PRIVATE mavsdk
-    +    PRIVATE /home/marvind/src/MAVSDK/build/win/third_party/install/lib/libjsoncpp.a
-     )
+    3,8c3
+    < find_package(PkgConfig)
+    < pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)
+    < pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)
+    < pkg_check_modules(PC_TINYXML2 QUIET IMPORTED_TARGET GLOBAL tinyxml2)
+    < 
+    < if(OFF)
+    ---
+    > if(NOT OFF)
 
-Now you should be ready to build ControlTower (fingers crossed!):
+Now cmake and make can run as usual (for MXE builds):
 
+    x86_64-w64-mingw32.static-cmake ..
     make -j5
 
 When everything succeeds, you get a ControlTower.exe that can be run under Windows.
