@@ -32,7 +32,7 @@ A quickfix for building with MXE (a headerfile that needs to be written lowercas
 
 `find ~/src/MAVSDK/src/mavsdk \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/Ws2tcpip\.h/ws2tcpip\.h/g'`
 
-Now cmake should run successfully. THen you are ready to build and install MAVSDK:
+Now cmake should run successfully. Then you are ready to build and install MAVSDK:
 
     cd ~/src/MAVSDK/build/win
     x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSUPERBUILD=OFF ../..
@@ -46,9 +46,10 @@ Now cmake should run successfully. THen you are ready to build and install MAVSD
     mkdir -p ControlTower/win_build
     cd ControlTower/win_build
 
-A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). Here is the diff (add four lines enbaling PkgConfig and disable the if statement):
+A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). Here is the diff (add five lines for Threads and PkgConfig packages, disable the if statement):
 
-    3,8c3
+    3,9c3
+    < find_package(Threads)
     < find_package(PkgConfig)
     < pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)
     < pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)
