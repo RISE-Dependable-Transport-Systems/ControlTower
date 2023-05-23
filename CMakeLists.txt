@@ -66,6 +66,9 @@ add_executable(ControlTower
     WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
     WayWise/userinterface/map/tracemodule.h
+    WayWise/userinterface/vehicleparameterui.h
+    WayWise/userinterface/vehicleparameterui.cpp
+    WayWise/userinterface/vehicleparameterui.ui
     WayWise/communication/vehicleconnections/mavsdkstation.h
     WayWise/communication/vehicleconnections/mavsdkstation.cpp
     WayWise/communication/vehicleconnections/vehicleconnection.h
