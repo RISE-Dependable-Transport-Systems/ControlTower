@@ -5,6 +5,7 @@
 #include <QStyleFactory>
 #include "core/pospoint.h"
 #include "vehicles/copterstate.h"
+#include "WayWise/logger/groundstationlogsignalrelay.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,12 +15,16 @@ MainWindow::MainWindow(QWidget *parent)
 //    setDarkStyle();
 
     ui->setupUi(this);
+
+    connect(&GroundStationLogSignalRelay::getInstance(), &GroundStationLogSignalRelay::logSent, this, &MainWindow::on_logSent);
+
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);
     ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
     ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
     ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
+    ui->logBrowser->hide();
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
@@ -34,7 +39,6 @@ MainWindow::MainWindow(QWidget *parent)
                 if (!ui->ubloxBasestationUI->isBasestationRunning()) {
                     ui->mapWidget->setEnuRef(gpsOriginLlh);
                     qDebug() << "Updated ENU reference with received GpsOrigin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
-
                     lastGpsOriginLlh = gpsOriginLlh;
                 }
         });
@@ -70,7 +74,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningUDP(14550);
-
 }
 
 MainWindow::~MainWindow()
@@ -137,4 +140,20 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         ui->driveUI->grabKeyboard();
     else
         ui->driveUI->releaseKeyboard();
+}
+
+void MainWindow::on_showLogsOutputAction_triggered()
+{
+    if(ui->logBrowser->isHidden()) {
+        ui->logBrowser->show();
+        ui->showLogsOutputAction->setText("Hide output");
+    } else {
+        ui->logBrowser->hide();
+        ui->showLogsOutputAction->setText("Show output");
+    }
+}
+
+void MainWindow::on_logSent(const QString& message)
+{
+    ui->logBrowser->append(message);
 }

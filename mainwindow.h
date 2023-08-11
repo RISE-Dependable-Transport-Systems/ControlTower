@@ -27,6 +27,10 @@ private slots:
 
     void on_tabWidget_currentChanged(int index);
 
+    void on_showLogsOutputAction_triggered();
+
+    void on_logSent(const QString& message);
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;
@@ -37,4 +41,5 @@ private:
     void newMavsdkSystem();
     void setDarkStyle();
 };
+
 #endif // MAINWINDOW_H
