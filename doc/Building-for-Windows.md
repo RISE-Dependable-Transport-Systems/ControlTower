@@ -2,7 +2,17 @@
 
 MXE allows you to cross-compile Windows applications under Linux. More information: https://mxe.cc/
 
+Instructions below were tested under Ubuntu 22.04.
+
 ## Setting up MXE
+Make sure requirements are installed:
+
+    sudo apt install autoconf automake autopoint bash bison bzip2 flex g++ g++-multilib gettext git gperf intltool \
+    libc6-dev-i386 libgdk-pixbuf2.0-dev libltdl-dev libgl-dev libpcre3-dev libssl-dev libtool-bin libxml-parser-perl \
+    lzip make openssl p7zip-full patch perl python3 python3-distutils python3-mako python3-pkg-resources python-is-python3 \
+    ruby sed unzip wget xz-utils
+
+Create install folder and clone sources:
 
     sudo mkdir /opt/mxe && sudo chown $USER /opt/mxe
     git clone https://github.com/mxe/mxe.git /opt/mxe
