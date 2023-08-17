@@ -2,7 +2,7 @@
 
 MXE allows you to cross-compile Windows applications under Linux. More information: https://mxe.cc/
 
-Instructions below were tested under Ubuntu 22.04.
+Instructions below were tested on Ubuntu 22.04 with MAVSDK [e7657c2](https://github.com/mavlink/MAVSDK/commit/e7657c2d87917df739186981f34f98a14c898893).
 
 ## Setting up MXE
 Make sure requirements are installed:
@@ -10,7 +10,7 @@ Make sure requirements are installed:
     sudo apt install autoconf automake autopoint bash bison bzip2 flex g++ g++-multilib gettext git gperf intltool \
     libc6-dev-i386 libgdk-pixbuf2.0-dev libltdl-dev libgl-dev libpcre3-dev libssl-dev libtool-bin libxml-parser-perl \
     lzip make openssl p7zip-full patch perl python3 python3-distutils python3-mako python3-pkg-resources python-is-python3 \
-    ruby sed unzip wget xz-utils
+    python3-pip ruby sed unzip wget xz-utils
 
 Create install folder and clone sources:
 
@@ -36,15 +36,22 @@ Make sure MXE is in $PATH by adding the following lines to ~/.bashrc (and starti
 
     cd ~/src # create first if it does not exist
     git clone --recursive https://github.com/mavlink/MAVSDK.git
-    mkdir -p ~/src/MAVSDK/build/win
+    mkdir -p ~/src/MAVSDK/build/MAVLink
+    mkdir ~/src/MAVSDK/build/MAVSDK
 
-A quickfix for building with MXE (a headerfile that needs to be written lowercase instead of uppercase):
+First install MAVLink headers
+
+    cd ~/src/MAVSDK/build/MAVLink
+    x86_64-w64-mingw32.static-cmake ../../third_party/mavlink/
+    make
+
+A quickfix for building MAVSDK with MXE (a headerfile that needs to be written lowercase instead of uppercase):
 
 `find ~/src/MAVSDK/src/mavsdk \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/Ws2tcpip\.h/ws2tcpip\.h/g'`
 
 Now cmake should run successfully. Then you are ready to build and install MAVSDK:
 
-    cd ~/src/MAVSDK/build/win
+    cd ~/src/MAVSDK/build/MAVSDK
     x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSUPERBUILD=OFF ../..
     make -j5
     make install
@@ -58,9 +65,10 @@ Now cmake should run successfully. Then you are ready to build and install MAVSD
 
 A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). Here is the diff (add five lines for Threads and PkgConfig packages, disable the if statement):
 
-    3,9c3
+    3,10c3
     < find_package(Threads)
     < find_package(PkgConfig)
+    < find_package(MAVLink)
     < pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)
     < pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)
     < pkg_check_modules(PC_TINYXML2 QUIET IMPORTED_TARGET GLOBAL tinyxml2)
