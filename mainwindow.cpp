@@ -5,7 +5,7 @@
 #include <QStyleFactory>
 #include "core/pospoint.h"
 #include "vehicles/copterstate.h"
-#include "WayWise/logger/groundstationlogsignalrelay.h"
+#include "WayWise/logger/logger.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
 
-    connect(&GroundStationLogSignalRelay::getInstance(), &GroundStationLogSignalRelay::logSent, this, &MainWindow::on_logSent);
+    connect(&Logger::getInstance(), &Logger::logSentGroundStation, this, &MainWindow::on_logSent);
 
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);

@@ -33,9 +33,8 @@ add_executable(ControlTower
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
-    WayWise/logger/groundstationlogger.cpp
-    WayWise/logger/groundstationlogger.h
-    WayWise/logger/groundstationlogsignalrelay.h
+    WayWise/logger/logger.cpp
+    WayWise/logger/logger.h
     WayWise/userinterface/driveui.cpp
     WayWise/userinterface/driveui.h
     WayWise/userinterface/driveui.ui
