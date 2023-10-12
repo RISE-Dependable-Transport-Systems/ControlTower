@@ -14,9 +14,12 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //    setDarkStyle();
 
-    ui->setupUi(this);
+    Logger::initGroundStation();
 
-    connect(&Logger::getInstance(), &Logger::logSentGroundStation, this, &MainWindow::on_logSent);
+    ui->setupUi(this);
+    ui->logBrowser->hide();
+
+    connect(&Logger::getInstance(), &Logger::logSent, this, &MainWindow::on_logSent);
 
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);
@@ -24,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
     ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
     ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
-    ui->logBrowser->hide();
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
