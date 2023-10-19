@@ -33,6 +33,7 @@ add_executable(ControlTower
     mainwindow.cpp
     mainwindow.h
     mainwindow.ui
+    WayWise/logger/logger.cpp
     WayWise/userinterface/driveui.cpp
     WayWise/userinterface/driveui.h
     WayWise/userinterface/driveui.ui

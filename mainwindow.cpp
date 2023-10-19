@@ -5,6 +5,7 @@
 #include <QStyleFactory>
 #include "core/pospoint.h"
 #include "vehicles/copterstate.h"
+#include "WayWise/logger/logger.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -13,7 +14,13 @@ MainWindow::MainWindow(QWidget *parent)
     QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
 //    setDarkStyle();
 
+    Logger::initGroundStation();
+
     ui->setupUi(this);
+    ui->logBrowser->hide();
+
+    connect(&Logger::getInstance(), &Logger::logSent, this, &MainWindow::on_logSent);
+
     ui->mapWidget->setScaleFactor(0.05);
     ui->mapWidget->setSelectedObjectState(0);
     ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
@@ -34,7 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
                 if (!ui->ubloxBasestationUI->isBasestationRunning()) {
                     ui->mapWidget->setEnuRef(gpsOriginLlh);
                     qDebug() << "Updated ENU reference with received GpsOrigin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
-
                     lastGpsOriginLlh = gpsOriginLlh;
                 }
         });
@@ -70,7 +76,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningUDP(14550);
-
 }
 
 MainWindow::~MainWindow()
@@ -137,4 +142,20 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         ui->driveUI->grabKeyboard();
     else
         ui->driveUI->releaseKeyboard();
+}
+
+void MainWindow::on_showLogsOutputAction_triggered()
+{
+    if(ui->logBrowser->isHidden()) {
+        ui->logBrowser->show();
+        ui->showLogsOutputAction->setText("Hide output");
+    } else {
+        ui->logBrowser->hide();
+        ui->showLogsOutputAction->setText("Show output");
+    }
+}
+
+void MainWindow::on_logSent(const QString& message)
+{
+    ui->logBrowser->append(message);
 }
