@@ -63,19 +63,16 @@ Now cmake should run successfully. Then you are ready to build and install MAVSD
     mkdir -p ControlTower/win_build
     cd ControlTower/win_build
 
-A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). Here is the diff (add five lines for Threads and PkgConfig packages, disable the if statement):
+A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). The following command will add a few lines to find required packages and disable the if statement (make sure to paste all lines into your terminal):
 
-    3,10c3
-    < find_package(Threads)
-    < find_package(PkgConfig)
-    < find_package(MAVLink)
-    < pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)
-    < pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)
-    < pkg_check_modules(PC_TINYXML2 QUIET IMPORTED_TARGET GLOBAL tinyxml2)
-    < 
-    < if(OFF)
-    ---
-    > if(NOT OFF)
+    sed -i 's/if(NOT OFF)/find_package(Threads)\
+    find_package(PkgConfig)\
+    find_package(MAVLink)\
+    pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)\
+    pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)\
+    pkg_check_modules(PC_TINYXML2 QUIET IMPORTED_TARGET GLOBAL tinyxml2)\
+    \
+    if(OFF)/g' /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake
 
 Now cmake and make can run as usual (for MXE builds):
 
