@@ -63,7 +63,7 @@
         <enum>QTabWidget::Rounded</enum>
        </property>
        <property name="currentIndex">
-        <number>5</number>
+        <number>0</number>
        </property>
        <property name="iconSize">
         <size>
@@ -214,7 +214,7 @@
      <x>0</x>
      <y>0</y>
      <width>1767</width>
-     <height>26</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
