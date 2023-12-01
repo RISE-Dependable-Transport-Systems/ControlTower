@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
         if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
             ui->tabWidget->removeTab(1); // remove flyUi
             ui->driveUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
+            ui->planUI->setCurrentVehicleConnection(vehicleConnection);
         } else {
             ui->tabWidget->removeTab(0); // remove driveUi
             ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
