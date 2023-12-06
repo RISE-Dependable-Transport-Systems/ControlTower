@@ -8,21 +8,22 @@ MAVSDK commit 926b067 or newer is require for building, which will probably beco
 ## Installing Prerequisites (on Ubuntu 20.04/22.04) & Building
     sudo apt install git build-essential cmake qtcreator qtbase5-dev libqt5serialport5-dev qtmultimedia5-dev libqt5gamepad5-dev
     git clone --recursive git@github.com:RISE-Dependable-Transport-Systems/ControlTower.git
-    
+    cd ControlTower
+
     # Building MAVSDK (requires [docker](https://docs.docker.com/engine/install/ubuntu/)):
     cd WayWise/tools/build_MAVSDK
     git clone --recursive git@github.com:mavlink/MAVSDK.git
     ./docker_create_amd64-deb.sh
     sudo dpkg -i libmavsdk*.deb
     cd -
-    
+ 
     mkdir build && cd build
-    cmake ../ControlTower
+    cmake ..
     cmake --build . --parallel 
-    
+
 ## Building for Windows using MXE
 See: [doc/Building-for-Windows.md](https://github.com/RISE-Dependable-Transport-Systems/ControlTower/blob/main/doc/Building-for-Windows.md)
-    
+
 ## Funded by
 <img src="https://user-images.githubusercontent.com/2404625/202213271-a4006999-49d5-4e61-9f3d-867a469238d1.png" width="120" height="81" align="left" alt="EU logo" />
 This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nº 814975. The results reflect only the author's view and the Agency is not responsible
