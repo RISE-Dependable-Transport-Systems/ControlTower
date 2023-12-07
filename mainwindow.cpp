@@ -65,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
         }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
+        ui->planUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, ui->mapWidget, &MapWidget::removeObjectState);
