@@ -34,14 +34,14 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
 
         // Note: single connection assumed for now
-        // If basestation is not running: GpsOrigin -> ENU reference (Basestation position -> ENU reference, otherwise)
-        connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleGpsOriginLlh, [this](const llh_t &gpsOriginLlh){
-            static llh_t lastGpsOriginLlh;
-            if (lastGpsOriginLlh.latitude != gpsOriginLlh.latitude || lastGpsOriginLlh.longitude != gpsOriginLlh.longitude)
+        // If basestation is not running: Vehicle's ENU reference -> ControlTower ENU reference (Basestation position -> ENU reference, otherwise)
+        connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleENUreferenceLlh, [this](const llh_t &enuReferenceLlh){
+            static llh_t lastENUreferenceLlh;
+            if (lastENUreferenceLlh.latitude != enuReferenceLlh.latitude || lastENUreferenceLlh.longitude != enuReferenceLlh.longitude)
                 if (!ui->ubloxBasestationUI->isBasestationRunning()) {
-                    ui->mapWidget->setEnuRef(gpsOriginLlh);
-                    qDebug() << "Updated ENU reference with received GpsOrigin:" << gpsOriginLlh.latitude << gpsOriginLlh.longitude;
-                    lastGpsOriginLlh = gpsOriginLlh;
+                    ui->mapWidget->setEnuRef(enuReferenceLlh);
+                    qDebug() << "Updated ENU reference with received GpsOrigin:" << enuReferenceLlh.latitude << enuReferenceLlh.longitude;
+                    lastENUreferenceLlh = enuReferenceLlh;
                 }
         });
 
@@ -65,6 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
         }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
+        ui->planUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, ui->mapWidget, &MapWidget::removeObjectState);
