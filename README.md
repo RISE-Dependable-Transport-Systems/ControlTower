@@ -19,7 +19,7 @@ MAVSDK 2.0 or newer is required and pre-built releases can be found at https://g
 ## Building for Windows using MXE
 See: [doc/Building-for-Windows.md](https://github.com/RISE-Dependable-Transport-Systems/ControlTower/blob/main/doc/Building-for-Windows.md)
 
-## Funded by
+
 <img src="https://user-images.githubusercontent.com/2404625/202213271-a4006999-49d5-4e61-9f3d-867a469238d1.png" width="120" height="81" align="left" alt="EU logo" />
-This project has received funding from the European Union’s Horizon 2020 research and innovation programme under grant agreement nº 814975. The results reflect only the author's view and the Agency is not responsible
+This project has received funding from the European Union’s Horizon 2020 and Horizon Europe research and innovation programmes, and the Digital Europe programme under grant agreement nº 814975, nº 101095835, 101069573 and nº 101100622. The results reflect only the authors' view and the Agency is not responsible
 for any use that may be made of the information it contains.
