@@ -77,6 +77,17 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
     connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
 
+    
+    QGuiApplication *app = qobject_cast<QGuiApplication *>(QCoreApplication::instance()); //a pointer to currect instance cast it to QGUI application
+    // connect focusWindowChanged signal of a QGuiApplication to the focusWindowChanged slot of the MainWindow class (this).
+    QObject::connect(
+        app,
+        &QGuiApplication::focusWindowChanged,
+        this,
+        &MainWindow::focusWindowChanged
+    );
+    
+
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningUDP(14550);
 }
@@ -161,4 +172,15 @@ void MainWindow::on_showLogsOutputAction_triggered()
 void MainWindow::on_logSent(const QString& message)
 {
     ui->logBrowser->append(message);
+}
+
+void MainWindow::focusWindowChanged(QWindow* window)
+{
+    if (window != windowHandle()) {
+        ui->driveUI->releaseKeyboard();//release the keyboard when change focus to other windows (apps)
+    } else {
+        if (ui->tabWidget->currentIndex() == 0) {
+            ui->driveUI->grabKeyboard();// give keyboard to DriveUI for manual control when visible
+        }
+    }
 }

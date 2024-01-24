@@ -1,6 +1,6 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
-
+#include <QWindow>
 #include <QMainWindow>
 #include "userinterface/flyui.h"
 #include <mavsdk/plugins/telemetry/telemetry.h>
@@ -30,6 +30,9 @@ private slots:
     void on_showLogsOutputAction_triggered();
 
     void on_logSent(const QString& message);
+
+    void focusWindowChanged(QWindow* window);
+    
 
 private:
     Ui::MainWindow *ui;
