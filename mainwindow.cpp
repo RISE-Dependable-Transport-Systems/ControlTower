@@ -27,6 +27,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
     ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
     ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
+    ui->driveTab->setDisabled(true);
+    ui->flyTab->setDisabled(true);
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
@@ -58,10 +60,14 @@ MainWindow::MainWindow(QWidget *parent)
             });
 
         if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
-            ui->tabWidget->removeTab(1); // remove flyUi
+            ui->driveTab->setEnabled(true);
+            ui->flyTab->setDisabled(true);
+
             ui->driveUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
         } else {
-            ui->tabWidget->removeTab(0); // remove driveUi
+            ui->flyTab->setEnabled(true);
+            ui->driveTab->setDisabled(true);
+
             ui->flyUI->setCurrentVehicleConnection(vehicleConnection); // Note: single connection assumed for now
         }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState()); // Note: single connection assumed for now
