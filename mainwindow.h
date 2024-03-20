@@ -31,6 +31,8 @@ private slots:
 
     void on_logSent(const QString& message);
 
+    void on_selectVehicleToControl_triggered();
+
 private:
     Ui::MainWindow *ui;
     QSharedPointer<MavsdkStation> mMavsdkStation;

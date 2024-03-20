@@ -168,3 +168,39 @@ void MainWindow::on_logSent(const QString& message)
 {
     ui->logBrowser->append(message);
 }
+
+void MainWindow::on_selectVehicleToControl_triggered()
+{
+    bool gotOK;
+    int systemId = QInputDialog::getInt(this, tr("Set Active Vehicle ID for control..."),
+                                 tr("ID vehicle should switch to:"), 0, 0, 9, 1, &gotOK);
+    if (gotOK) {
+/*        if(systemId == 0) {
+                connect(ui->driveUI, &DriveUI::stopAllVehicles, [this](){
+                   for(const auto &connection : mMavsdkStation->getVehicleConnectionList()) {
+                       static int counter = 1;
+                       qDebug() << counter;
+                       counter++;
+                        connection->pauseAutopilot();
+                   }
+                });
+            return;
+        }*/
+        if (mMavsdkStation->getVehicleConnection(systemId)->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
+            ui->driveUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+            ui->traceUI->setCurrentTraceVehicle(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+        } else {
+            ui->flyUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+            ui->traceUI->setCurrentTraceVehicle(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+        }
+        ui->planUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+    }
+}
