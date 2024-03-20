@@ -220,6 +220,7 @@
      <x>0</x>
      <y>0</y>
      <width>1767</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -228,6 +229,7 @@
     </property>
     <addaction name="addUdpConnectionAction"/>
     <addaction name="AddSerialConnectionAction"/>
+    <addaction name="selectVehicleToControl"/>
    </widget>
    <widget class="QMenu" name="logsMenu">
     <property name="title">
@@ -257,6 +259,11 @@
   <action name="exportLogsAction">
    <property name="text">
     <string>Export to File...</string>
+   </property>
+  </action>
+  <action name="selectVehicleToControl">
+   <property name="text">
+    <string>Select system id</string>
    </property>
   </action>
  </widget>
