@@ -220,6 +220,7 @@
      <x>0</x>
      <y>0</y>
      <width>1767</width>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -234,6 +235,8 @@
      <string>Logs</string>
     </property>
     <addaction name="showLogsOutputAction"/>
+    <addaction name="showVerboseLogsOutputAction"/>
+    <addaction name="hideLogsOutputAction"/>
    </widget>
    <addaction name="fileMenu"/>
    <addaction name="logsMenu"/>
@@ -251,12 +254,22 @@
   </action>
   <action name="showLogsOutputAction">
    <property name="text">
-    <string>Show output</string>
+    <string>Show Log</string>
    </property>
   </action>
   <action name="exportLogsAction">
    <property name="text">
     <string>Export to File...</string>
+   </property>
+  </action>
+  <action name="showVerboseLogsOutputAction">
+   <property name="text">
+    <string>Show Log (Verbose)</string>
+   </property>
+  </action>
+  <action name="hideLogsOutputAction">
+   <property name="text">
+    <string>Hide Log</string>
    </property>
   </action>
  </widget>

@@ -29,6 +29,10 @@ private slots:
 
     void on_showLogsOutputAction_triggered();
 
+    void on_showVerboseLogsOutputAction_triggered();
+
+    void on_hideLogsOutputAction_triggered();
+
     void on_logSent(const QString& message);
 
 private:

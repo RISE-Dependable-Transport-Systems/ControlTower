@@ -155,13 +155,21 @@ void MainWindow::on_tabWidget_currentChanged(int index)
 
 void MainWindow::on_showLogsOutputAction_triggered()
 {
-    if(ui->logBrowser->isHidden()) {
+        Logger::setVerbose(false);
+        qDebug() << "Verbose logging off";
         ui->logBrowser->show();
-        ui->showLogsOutputAction->setText("Hide output");
-    } else {
+}
+
+void MainWindow::on_showVerboseLogsOutputAction_triggered()
+{
+        Logger::setVerbose(true);
+        qDebug() << "verbose" << "Verbose logging on";
+        ui->logBrowser->show();
+}
+
+void MainWindow::on_hideLogsOutputAction_triggered()
+{
         ui->logBrowser->hide();
-        ui->showLogsOutputAction->setText("Show output");
-    }
 }
 
 void MainWindow::on_logSent(const QString& message)
