@@ -73,13 +73,40 @@ MainWindow::MainWindow(QWidget *parent)
         }
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
         ui->planUI->setCurrentVehicleConnection(vehicleConnection);
+
+        updateVehicleIdComboBox();
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, ui->mapWidget, &MapWidget::removeObjectState);
+    connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, this, &MainWindow::updateVehicleIdComboBox);
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, ui->planUI->getRouteGeneratorUI().get(), &RouteGeneratorUI::setEnuRef);
+
+    connect(ui->vehicleIdCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
+        if (ui->vehicleIdCombo->count() == 0)
+            return;
+        QSharedPointer<MavsdkVehicleConnection> vehicleConnection = ui->vehicleIdCombo->itemData(index).value<QSharedPointer<MavsdkVehicleConnection>>();
+
+        if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
+            ui->driveUI->setCurrentVehicleConnection(vehicleConnection);
+            ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+        } else {
+            ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+            ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+        }
+        ui->planUI->setCurrentVehicleConnection(vehicleConnection);
+    });
+
 
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningSerial(); // Sik radio
@@ -92,6 +119,19 @@ MainWindow::~MainWindow()
     // Allow MAVSDK to finish
     thread()->msleep(100);
     delete ui;
+}
+
+void MainWindow::updateVehicleIdComboBox()
+{
+    // TODO: better handling of which vehicle to point to on new connection or disconnect
+    int previousCurrentIndex = ui->vehicleIdCombo->currentIndex();
+
+    ui->vehicleIdCombo->clear();
+    for (const auto& vehicleConnection : mMavsdkStation->getVehicleConnectionList())
+        ui->vehicleIdCombo->addItem(QString::number(vehicleConnection->getVehicleState()->getId()),
+                                    QVariant::fromValue(vehicleConnection));
+
+    ui->vehicleIdCombo->setCurrentIndex((previousCurrentIndex < ui->vehicleIdCombo->count()) ? previousCurrentIndex : (ui->vehicleIdCombo->count()-1));
 }
 
 void MainWindow::setDarkStyle()
@@ -167,40 +207,4 @@ void MainWindow::on_showLogsOutputAction_triggered()
 void MainWindow::on_logSent(const QString& message)
 {
     ui->logBrowser->append(message);
-}
-
-void MainWindow::on_selectVehicleToControl_triggered()
-{
-    bool gotOK;
-    int systemId = QInputDialog::getInt(this, tr("Set Active Vehicle ID for control..."),
-                                 tr("ID vehicle should switch to:"), 0, 0, 9, 1, &gotOK);
-    if (gotOK) {
-/*        if(systemId == 0) {
-                connect(ui->driveUI, &DriveUI::stopAllVehicles, [this](){
-                   for(const auto &connection : mMavsdkStation->getVehicleConnectionList()) {
-                       static int counter = 1;
-                       qDebug() << counter;
-                       counter++;
-                        connection->pauseAutopilot();
-                   }
-                });
-            return;
-        }*/
-        if (mMavsdkStation->getVehicleConnection(systemId)->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
-            ui->driveUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
-            ui->traceUI->setCurrentTraceVehicle(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-//            ui->mapWidget->setFollowObjectState(systemId);
-        } else {
-            ui->flyUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
-            ui->traceUI->setCurrentTraceVehicle(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-//            ui->mapWidget->setFollowObjectState(systemId);
-        }
-        ui->planUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
-    }
 }
