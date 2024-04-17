@@ -41,6 +41,7 @@ private:
     void newMavsdkSystem();
     void setDarkStyle();
     void updateVehicleIdComboBox();
+    void updateUiForCurrentVehicleIdComboBoxIndex(int index);
 };
 
 #endif // MAINWINDOW_H

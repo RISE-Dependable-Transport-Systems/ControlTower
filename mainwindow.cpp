@@ -50,63 +50,29 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
 
-        ui->cameraGimbalUI->setVehicleConnection(vehicleConnection);
-        if (vehicleConnection->hasGimbal())
-            ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
-        else // Gimbal might be available, but not detected yet
-            connect(vehicleConnection.get(), &MavsdkVehicleConnection::detectedGimbal, [&](QSharedPointer<Gimbal> gimbal){
-                ui->cameraGimbalUI->setGimbal(gimbal);
-            });
-
-        if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
-            ui->driveTab->setEnabled(true);
-            ui->driveUI->setCurrentVehicleConnection(vehicleConnection);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-        } else {
-            ui->flyTab->setEnabled(true);
-            ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-        }
-        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
-        ui->planUI->setCurrentVehicleConnection(vehicleConnection);
-
         updateVehicleIdComboBox();
     });
 
-    connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, ui->mapWidget, &MapWidget::removeObjectState);
-    connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, this, &MainWindow::updateVehicleIdComboBox);
+    connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, [this](int systemId){
+        ui->mapWidget->removeObjectState(systemId);
+        if (ui->vehicleIdCombo->currentText().toInt() == systemId) {
+            ui->driveUI->setCurrentVehicleConnection(nullptr);
+            ui->flyUI->setCurrentVehicleConnection(nullptr);
+            ui->driveTab->setDisabled(true);
+            ui->flyTab->setDisabled(true);
+            ui->planUI->setCurrentVehicleConnection(nullptr);
+            ui->cameraGimbalUI->setVehicleConnection(nullptr);
+            ui->cameraGimbalUI->setGimbal(nullptr);
+        }
+
+        updateVehicleIdComboBox();
+
+    });
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, mMavsdkStation.get(), &MavsdkStation::setEnuReference);
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::rtcmData, mMavsdkStation.get(), &MavsdkStation::forwardRtcmData);
     connect(ui->mapWidget, &MapWidget::enuRefChanged, ui->planUI->getRouteGeneratorUI().get(), &RouteGeneratorUI::setEnuRef);
-
-    connect(ui->vehicleIdCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), [this](int index) {
-        if (ui->vehicleIdCombo->count() == 0)
-            return;
-        QSharedPointer<MavsdkVehicleConnection> vehicleConnection = ui->vehicleIdCombo->itemData(index).value<QSharedPointer<MavsdkVehicleConnection>>();
-
-        if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
-            ui->driveUI->setCurrentVehicleConnection(vehicleConnection);
-            ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-//            ui->mapWidget->setFollowObjectState(systemId);
-        } else {
-            ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
-            ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-            disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
-            connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
-//            ui->mapWidget->setFollowObjectState(systemId);
-        }
-        ui->planUI->setCurrentVehicleConnection(vehicleConnection);
-    });
-
+    connect(ui->vehicleIdCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::updateUiForCurrentVehicleIdComboBoxIndex);
 
     mMavsdkStation->startListeningUDP();
 //    mMavsdkStation->startListeningSerial(); // Sik radio
@@ -123,8 +89,9 @@ MainWindow::~MainWindow()
 
 void MainWindow::updateVehicleIdComboBox()
 {
+    // Keep ui in sync with vehicleconnections maintained by MavsdkStation
     // TODO: better handling of which vehicle to point to on new connection or disconnect
-    int previousCurrentIndex = ui->vehicleIdCombo->currentIndex();
+    int previousCurrentIndex = ui->vehicleIdCombo->currentIndex() < 0 ? 0 : ui->vehicleIdCombo->currentIndex();
 
     ui->vehicleIdCombo->clear();
     for (const auto& vehicleConnection : mMavsdkStation->getVehicleConnectionList())
@@ -132,6 +99,46 @@ void MainWindow::updateVehicleIdComboBox()
                                     QVariant::fromValue(vehicleConnection));
 
     ui->vehicleIdCombo->setCurrentIndex((previousCurrentIndex < ui->vehicleIdCombo->count()) ? previousCurrentIndex : (ui->vehicleIdCombo->count()-1));
+}
+
+void MainWindow::updateUiForCurrentVehicleIdComboBoxIndex(int index) {
+    if (ui->vehicleIdCombo->count() == 0)
+        return;
+
+    QSharedPointer<MavsdkVehicleConnection> vehicleConnection = ui->vehicleIdCombo->itemData(index).value<QSharedPointer<MavsdkVehicleConnection>>();
+    if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
+        ui->driveUI->setCurrentVehicleConnection(vehicleConnection);
+        ui->driveTab->setDisabled(false);
+        ui->flyTab->setDisabled(true);
+        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+        disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+        disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+        connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+    } else { // not rover -> drone
+        ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+        ui->flyTab->setDisabled(false);
+        ui->driveTab->setDisabled(true);
+        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+        disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+        disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
+        connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
+//            ui->mapWidget->setFollowObjectState(systemId);
+    }
+
+    ui->planUI->setCurrentVehicleConnection(vehicleConnection);
+
+    // TODO: revise late detection of gimbal (somewhat messy)
+    ui->cameraGimbalUI->setVehicleConnection(vehicleConnection);
+    disconnect(vehicleConnection.get(), &MavsdkVehicleConnection::detectedGimbal, nullptr, nullptr);
+    if (vehicleConnection->hasGimbal())
+        ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
+    else // Gimbal might be detected some time after the system
+        connect(vehicleConnection.get(), &MavsdkVehicleConnection::detectedGimbal, [&](QSharedPointer<Gimbal> gimbal){
+            ui->cameraGimbalUI->setGimbal(gimbal);
+        });
+
+    ui->mapWidget->setSelectedObjectState(vehicleConnection->getVehicleState()->getId());
 }
 
 void MainWindow::setDarkStyle()
