@@ -31,12 +31,12 @@ MainWindow::MainWindow(QWidget *parent)
     ui->flyTab->setDisabled(true);
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
-    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](const quint8 systemId){
+    connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
         // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
-        mMavsdkStation->getVehicleConnection(systemId)->setConvertLocalPositionsToGlobalBeforeSending(true);
+        vehicleConnection->setConvertLocalPositionsToGlobalBeforeSending(true);
 
         // If basestation is not running: Vehicle's ENU reference -> ControlTower ENU reference (Basestation position -> ENU reference, otherwise)
-        connect(mMavsdkStation->getVehicleConnection(systemId).get(), &MavsdkVehicleConnection::gotVehicleENUreferenceLlh, [this](const llh_t &enuReferenceLlh){
+        connect(vehicleConnection.get(), &MavsdkVehicleConnection::gotVehicleENUreferenceLlh, [this](const llh_t &enuReferenceLlh){
             static llh_t lastENUreferenceLlh;
             if (lastENUreferenceLlh.latitude != enuReferenceLlh.latitude || lastENUreferenceLlh.longitude != enuReferenceLlh.longitude)
                 if (!ui->ubloxBasestationUI->isBasestationRunning()) {
@@ -46,33 +46,33 @@ MainWindow::MainWindow(QWidget *parent)
                 }
         });
 
-        ui->mapWidget->addObjectState(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
-        mMavsdkStation->getVehicleConnection(systemId)->setEnuReference(ui->mapWidget->getEnuRef());
+        ui->mapWidget->addObjectState(vehicleConnection->getVehicleState());
+        vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
 
-        ui->cameraGimbalUI->setVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
-        if (mMavsdkStation->getVehicleConnection(systemId)->hasGimbal())
-            ui->cameraGimbalUI->setGimbal(mMavsdkStation->getVehicleConnection(systemId)->getGimbal());
+        ui->cameraGimbalUI->setVehicleConnection(vehicleConnection);
+        if (vehicleConnection->hasGimbal())
+            ui->cameraGimbalUI->setGimbal(vehicleConnection->getGimbal());
         else // Gimbal might be available, but not detected yet
-            connect(mMavsdkStation->getVehicleConnection(systemId).get(), &MavsdkVehicleConnection::detectedGimbal, [&](QSharedPointer<Gimbal> gimbal){
+            connect(vehicleConnection.get(), &MavsdkVehicleConnection::detectedGimbal, [&](QSharedPointer<Gimbal> gimbal){
                 ui->cameraGimbalUI->setGimbal(gimbal);
             });
 
-        if (mMavsdkStation->getVehicleConnection(systemId)->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
+        if (vehicleConnection->getVehicleType() == MAV_TYPE_GROUND_ROVER) {
             ui->driveTab->setEnabled(true);
-            ui->driveUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+            ui->driveUI->setCurrentVehicleConnection(vehicleConnection);
             disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
             disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
             connect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
         } else {
             ui->flyTab->setEnabled(true);
-            ui->flyUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+            ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
             disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
             disconnect(ui->planUI, &PlanUI::routeDoneForUse, ui->driveUI, &DriveUI::gotRouteForAutopilot);
             connect(ui->planUI, &PlanUI::routeDoneForUse, ui->flyUI, &FlyUI::gotRouteForAutopilot);
         }
-        ui->traceUI->setCurrentTraceVehicle(mMavsdkStation->getVehicleConnection(systemId)->getVehicleState());
-        ui->planUI->setCurrentVehicleConnection(mMavsdkStation->getVehicleConnection(systemId));
+        ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
+        ui->planUI->setCurrentVehicleConnection(vehicleConnection);
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, ui->mapWidget, &MapWidget::removeObjectState);
