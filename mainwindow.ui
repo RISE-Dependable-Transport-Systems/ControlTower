@@ -23,17 +23,8 @@
    <layout class="QVBoxLayout" name="verticalLayout_5">
     <item>
      <widget class="QSplitter" name="splitter">
-      <property name="lineWidth">
-       <number>1</number>
-      </property>
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
-      </property>
-      <property name="opaqueResize">
-       <bool>true</bool>
-      </property>
-      <property name="handleWidth">
-       <number>8</number>
       </property>
       <widget class="MapWidget" name="mapWidget" native="true">
        <property name="sizePolicy">
@@ -49,153 +40,182 @@
         </size>
        </property>
       </widget>
-      <widget class="QTabWidget" name="tabWidget">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="minimumSize">
-        <size>
-         <width>320</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="tabPosition">
-        <enum>QTabWidget::North</enum>
-       </property>
-       <property name="tabShape">
-        <enum>QTabWidget::Rounded</enum>
-       </property>
-       <property name="currentIndex">
-        <number>0</number>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>24</width>
-         <height>24</height>
-        </size>
-       </property>
-       <widget class="QWidget" name="driveTab">
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/Car-96.png</normaloff>:/icons/icons/Car-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_7">
-         <item>
-          <widget class="DriveUI" name="driveUI" native="true"/>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="flyTab">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/icons8-email-send-96.png</normaloff>:/icons/icons/icons8-email-send-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <attribute name="toolTip">
-         <string>Fly</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout">
-         <item>
-          <widget class="FlyUI" name="flyUI" native="true">
+      <widget class="QWidget" name="verticalLayoutWidget">
+       <layout class="QVBoxLayout" name="verticalLayout_8">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLabel" name="vehicleIdLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Active Vehicle ID:</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="vehicleIdCombo"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="minimumSize">
+           <size>
+            <width>320</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="tabPosition">
+           <enum>QTabWidget::North</enum>
+          </property>
+          <property name="tabShape">
+           <enum>QTabWidget::Rounded</enum>
+          </property>
+          <property name="currentIndex">
+           <number>0</number>
+          </property>
+          <property name="iconSize">
+           <size>
+            <width>24</width>
+            <height>24</height>
+           </size>
+          </property>
+          <widget class="QWidget" name="driveTab">
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/Car-96.png</normaloff>:/icons/icons/Car-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_7">
+            <item>
+             <widget class="DriveUI" name="driveUI" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="flyTab">
            <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/icons8-email-send-96.png</normaloff>:/icons/icons/icons8-email-send-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Fly</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_2">
+            <item>
+             <widget class="FlyUI" name="flyUI" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="planTab">
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/icons8-itinerary-96.png</normaloff>:/icons/icons/icons8-itinerary-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <attribute name="toolTip">
-         <string>Plan</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_3">
-         <item>
-          <widget class="PlanUI" name="planUI" native="true">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QWidget" name="planTab">
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/icons8-itinerary-96.png</normaloff>:/icons/icons/icons8-itinerary-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Plan</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_3">
+            <item>
+             <widget class="PlanUI" name="planUI" native="true">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
           </widget>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="cameraTab">
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/icons8-compact-camera-96.png</normaloff>:/icons/icons/icons8-compact-camera-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <attribute name="toolTip">
-         <string>Camera &amp; Gimbal</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_6">
-         <item>
-          <widget class="CameraGimbalUI" name="cameraGimbalUI" native="true"/>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="traceTab">
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/icons8-video-record-96.png</normaloff>:/icons/icons/icons8-video-record-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <attribute name="toolTip">
-         <string>Trace Position</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_2">
-         <item>
-          <widget class="TraceUI" name="traceUI" native="true"/>
-         </item>
-        </layout>
-       </widget>
-       <widget class="QWidget" name="basestationTab">
-        <attribute name="icon">
-         <iconset resource="resources.qrc">
-          <normaloff>:/icons/icons/icons8-gps-signal-96.png</normaloff>:/icons/icons/icons8-gps-signal-96.png</iconset>
-        </attribute>
-        <attribute name="title">
-         <string/>
-        </attribute>
-        <attribute name="toolTip">
-         <string>GNSS Basestation</string>
-        </attribute>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="UbloxBasestationUI" name="ubloxBasestationUI" native="true"/>
-         </item>
-        </layout>
-       </widget>
+          <widget class="QWidget" name="cameraTab">
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/icons8-compact-camera-96.png</normaloff>:/icons/icons/icons8-compact-camera-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Camera &amp; Gimbal</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_6">
+            <item>
+             <widget class="CameraGimbalUI" name="cameraGimbalUI" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="traceTab">
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/icons8-video-record-96.png</normaloff>:/icons/icons/icons8-video-record-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <attribute name="toolTip">
+            <string>Trace Position</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="TraceUI" name="traceUI" native="true"/>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="basestationTab">
+           <attribute name="icon">
+            <iconset resource="resources.qrc">
+             <normaloff>:/icons/icons/icons8-gps-signal-96.png</normaloff>:/icons/icons/icons8-gps-signal-96.png</iconset>
+           </attribute>
+           <attribute name="title">
+            <string/>
+           </attribute>
+           <attribute name="toolTip">
+            <string>GNSS Basestation</string>
+           </attribute>
+           <layout class="QVBoxLayout" name="verticalLayout_9">
+            <item>
+             <widget class="UbloxBasestationUI" name="ubloxBasestationUI" native="true"/>
+            </item>
+           </layout>
+          </widget>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -220,6 +240,7 @@
      <x>0</x>
      <y>0</y>
      <width>1767</width>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="fileMenu">
@@ -257,6 +278,11 @@
   <action name="exportLogsAction">
    <property name="text">
     <string>Export to File...</string>
+   </property>
+  </action>
+  <action name="selectVehicleToControl">
+   <property name="text">
+    <string>Select system id</string>
    </property>
   </action>
  </widget>
