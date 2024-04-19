@@ -78,6 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    mMavsdkStation->startListeningSerial(); // Sik radio
 //    mMavsdkStation->startListeningUDP(14550); // HereLink
 //    mMavsdkStation->startListeningUDP(14541); // Use a new port per vehicleConnection
+//    mMavsdkStation->startListeningUDP(14555); // PX4 simulators
 }
 
 MainWindow::~MainWindow()
