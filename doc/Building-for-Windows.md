@@ -2,7 +2,7 @@
 
 MXE allows you to cross-compile Windows applications under Linux. More information: https://mxe.cc/
 
-Instructions below were tested on Ubuntu 22.04 with MAVSDK [e7657c2](https://github.com/mavlink/MAVSDK/commit/e7657c2d87917df739186981f34f98a14c898893).
+Instructions below were tested on Ubuntu 22.04 with MAVSDK [v2.12.2](https://github.com/mavlink/MAVSDK/releases/tag/v2.12.2).
 
 ## Setting up MXE
 Make sure requirements are installed:
@@ -25,7 +25,7 @@ Create a settings.mk file in /opt/mxe with the following contents:
 
 Build MXE, this will take a while:
 
-`make qtbase qtserialport qtgamepad qtmultimedia cmake curl jsoncpp tinyxml2`
+`make qtbase qtserialport qtgamepad qtmultimedia cmake curl jsoncpp tinyxml2 dlfcn-win32 lzma`
 
 Make sure MXE is in $PATH by adding the following lines to ~/.bashrc (and starting a new shell session afterwards):
 
@@ -45,14 +45,15 @@ First install MAVLink headers
     x86_64-w64-mingw32.static-cmake ../../third_party/mavlink/
     make
 
-A quickfix for building MAVSDK with MXE (a headerfile that needs to be written lowercase instead of uppercase):
+Quickfixes for building MAVSDK with MXE (a headerfile that needs to be written lowercase instead of uppercase):
 
 `find ~/src/MAVSDK/src/mavsdk \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/Ws2tcpip\.h/ws2tcpip\.h/g'`
+`find ~/src/MAVSDK/src/mavsdk \( -type d -name .git -prune \) -o -type f -print0 | xargs -0 sed -i 's/Windows\.h/windows\.h/g'`
 
 Now cmake should run successfully. Then you are ready to build and install MAVSDK:
 
     cd ~/src/MAVSDK/build/MAVSDK
-    x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSUPERBUILD=OFF ../..
+    x86_64-w64-mingw32.static-cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_SHARED_LIBS=OFF -DSUPERBUILD=OFF -DBUILD_TESTS=OFF ../..
     make -j5
     make install
 
@@ -63,16 +64,19 @@ Now cmake should run successfully. Then you are ready to build and install MAVSD
     mkdir -p ControlTower/win_build
     cd ControlTower/win_build
 
-A few lines in MAVSDK's provided cmake file at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake need to be changed (after every install/update of MAVSDK). The following command will add a few lines to find required packages and disable the if statement (make sure to paste all lines into your terminal):
+A few lines in MAVSDK's provided cmake files at /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake and /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKTargets.cmake need to be changed (after every install/update of MAVSDK). The following command will add a few lines to find required packages and disable the if statement in MAVSDKConfig.cmake (make sure to paste all lines into your terminal):
 
     sed -i 's/if(NOT OFF)/find_package(Threads)\
     find_package(PkgConfig)\
     find_package(MAVLink)\
+    find_package(LibLZMA)\
     pkg_check_modules(PC_CURL QUIET IMPORTED_TARGET GLOBAL libcurl)\
     pkg_check_modules(PC_JSONCPP QUIET IMPORTED_TARGET GLOBAL jsoncpp)\
     pkg_check_modules(PC_TINYXML2 QUIET IMPORTED_TARGET GLOBAL tinyxml2)\
     \
     if(OFF)/g' /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKConfig.cmake
+
+    sed -i 's/JsonCpp::JsonCpp/PC_JSONCPP/g' /opt/mxe/usr/x86_64-w64-mingw32.static/lib/cmake/MAVSDK/MAVSDKTargets.cmake
 
 Now cmake and make can run as usual (for MXE builds):
 
