@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
 
-        updateVehicleIdComboBox();
+        updateVehicleIdComboBoxes();
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, [this](int systemId){
@@ -65,7 +65,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->cameraGimbalUI->setGimbal(nullptr);
         }
 
-        updateVehicleIdComboBox();
+        updateVehicleIdComboBoxes();
 
     });
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
@@ -78,7 +78,8 @@ MainWindow::MainWindow(QWidget *parent)
 //    mMavsdkStation->startListeningSerial(); // Sik radio
 //    mMavsdkStation->startListeningUDP(14550); // HereLink
 //    mMavsdkStation->startListeningUDP(14541); // Use a new port per vehicleConnection
-//    mMavsdkStation->startListeningUDP(14555); // PX4 simulators
+    mMavsdkStation->startListeningUDP(14555); // PX4 simulators
+
 }
 
 MainWindow::~MainWindow()
@@ -88,7 +89,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateVehicleIdComboBox()
+void MainWindow::updateVehicleIdComboBoxes()
 {
     // Keep ui in sync with vehicleconnections maintained by MavsdkStation
     // TODO: better handling of which vehicle to point to on new connection or disconnect
@@ -100,6 +101,8 @@ void MainWindow::updateVehicleIdComboBox()
                                     QVariant::fromValue(vehicleConnection));
 
     ui->vehicleIdCombo->setCurrentIndex((previousCurrentIndex < ui->vehicleIdCombo->count()) ? previousCurrentIndex : (ui->vehicleIdCombo->count()-1));
+
+    ui->flyUI->updateFollowVehicleIdComboBox(mMavsdkStation->getVehicleConnectionList());
 }
 
 void MainWindow::updateUiForCurrentVehicleIdComboBoxIndex(int index) {
