@@ -83,6 +83,7 @@ add_executable(ControlTower
     WayWise/communication/vehicleconnections/vehicleconnection.cpp
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.h
     WayWise/communication/vehicleconnections/mavsdkvehicleconnection.cpp
+    WayWise/communication/parameterserver.cpp
     WayWise/vehicles/objectstate.cpp
     WayWise/vehicles/objectstate.h
     WayWise/vehicles/vehiclestate.cpp
@@ -94,8 +95,10 @@ add_executable(ControlTower
     WayWise/autopilot/waypointfollower.h
     WayWise/autopilot/gotowaypointfollower.cpp
     WayWise/autopilot/gotowaypointfollower.h
-#    WayWise/vehicles/controller/movementcontroller.cpp
-#    WayWise/vehicles/controller/movementcontroller.h
+    WayWise/autopilot/followpoint.h
+    WayWise/autopilot/followpoint.cpp
+    WayWise/vehicles/controller/movementcontroller.cpp
+    WayWise/vehicles/controller/movementcontroller.h
 #    WayWise/autopilot/purepursuitwaypointfollower.cpp
 #    WayWise/autopilot/purepursuitwaypointfollower.h
     WayWise/core/coordinatetransforms.h
