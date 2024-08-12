@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->logBrowser->hide();
 
+    this->setFocusPolicy(Qt::StrongFocus);
+    this->setFocus();
+
     connect(&Logger::getInstance(), &Logger::logSent, this, &MainWindow::on_logSent);
 
     ui->mapWidget->setScaleFactor(0.05);
@@ -215,4 +218,15 @@ void MainWindow::on_showLogsOutputAction_triggered()
 void MainWindow::on_logSent(const QString& message)
 {
     ui->logBrowser->append(message);
+}
+
+void MainWindow::focusInEvent(QFocusEvent *event) {
+    QMainWindow::focusInEvent(event);
+    if (ui->tabWidget->currentIndex() == 0)
+        ui->driveUI->grabKeyboard();
+}
+
+void MainWindow::focusOutEvent(QFocusEvent *event) {
+    QMainWindow::focusOutEvent(event);
+    ui->driveUI->releaseKeyboard();
 }
