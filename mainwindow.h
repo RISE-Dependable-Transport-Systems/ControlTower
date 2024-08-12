@@ -42,6 +42,10 @@ private:
     void setDarkStyle();
     void updateVehicleIdComboBox();
     void updateUiForCurrentVehicleIdComboBoxIndex(int index);
+
+protected:
+    void focusInEvent(QFocusEvent *event) override;
+    void focusOutEvent(QFocusEvent *event) override;
 };
 
 #endif // MAINWINDOW_H
