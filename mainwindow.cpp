@@ -94,15 +94,14 @@ MainWindow::~MainWindow()
 void MainWindow::updateVehicleIdComboBox()
 {
     // Keep ui in sync with vehicleconnections maintained by MavsdkStation
-    // TODO: better handling of which vehicle to point to on new connection or disconnect
-    int previousCurrentIndex = ui->vehicleIdCombo->currentIndex() < 0 ? 0 : ui->vehicleIdCombo->currentIndex();
+    auto currentVehicleId = QString(ui->vehicleIdCombo->currentText()).isEmpty() ? 0 : ui->vehicleIdCombo->currentText();
 
     ui->vehicleIdCombo->clear();
     for (const auto& vehicleConnection : mMavsdkStation->getVehicleConnectionList())
         ui->vehicleIdCombo->addItem(QString::number(vehicleConnection->getVehicleState()->getId()),
                                     QVariant::fromValue(vehicleConnection));
 
-    ui->vehicleIdCombo->setCurrentIndex((previousCurrentIndex < ui->vehicleIdCombo->count()) ? previousCurrentIndex : (ui->vehicleIdCombo->count()-1));
+    ui->vehicleIdCombo->setCurrentIndex(ui->vehicleIdCombo->findText(currentVehicleId) < 0 ? 0 : ui->vehicleIdCombo->findText(currentVehicleId));
 }
 
 void MainWindow::updateUiForCurrentVehicleIdComboBoxIndex(int index) {
