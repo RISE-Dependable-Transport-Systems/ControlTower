@@ -40,7 +40,7 @@ private:
 
     void newMavsdkSystem();
     void setDarkStyle();
-    void updateVehicleIdComboBox();
+    void updateVehicleIdComboBoxes();
     void updateUiForCurrentVehicleIdComboBoxIndex(int index);
 
 protected:
