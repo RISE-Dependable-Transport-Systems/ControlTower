@@ -6,6 +6,7 @@
 #include "core/pospoint.h"
 #include "vehicles/copterstate.h"
 #include "WayWise/logger/logger.h"
+#include "WayWise/communication/parameterserver.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -15,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 //    setDarkStyle();
 
     Logger::initGroundStation();
+    ParameterServer::initialize();
 
     ui->setupUi(this);
     ui->logBrowser->hide();
@@ -53,7 +55,7 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
 
-        updateVehicleIdComboBox();
+        updateVehicleIdComboBoxes();
     });
 
     connect(mMavsdkStation.get(), &MavsdkStation::disconnectOfVehicleConnection, [this](int systemId){
@@ -68,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
             ui->cameraGimbalUI->setGimbal(nullptr);
         }
 
-        updateVehicleIdComboBox();
+        updateVehicleIdComboBoxes();
 
     });
     connect(ui->ubloxBasestationUI, &UbloxBasestationUI::currentPosition, ui->mapWidget, &MapWidget::setEnuRef);
@@ -78,10 +80,11 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->vehicleIdCombo, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainWindow::updateUiForCurrentVehicleIdComboBoxIndex);
 
     mMavsdkStation->startListeningUDP();
-//    mMavsdkStation->startListeningSerial(); // Sik radio
+//    mMavsdkStation->startListeningSerial(); // sudo ls -l /dev/tty* (Sik radio /dev/ttyUSB*), (Pixhawk with usb cable /dev/ttyACM*)
 //    mMavsdkStation->startListeningUDP(14550); // HereLink
 //    mMavsdkStation->startListeningUDP(14541); // Use a new port per vehicleConnection
 //    mMavsdkStation->startListeningUDP(14555); // PX4 simulators
+
 }
 
 MainWindow::~MainWindow()
@@ -91,7 +94,7 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::updateVehicleIdComboBox()
+void MainWindow::updateVehicleIdComboBoxes()
 {
     // Keep ui in sync with vehicleconnections maintained by MavsdkStation
     auto currentVehicleId = QString(ui->vehicleIdCombo->currentText()).isEmpty() ? 0 : ui->vehicleIdCombo->currentText();
@@ -102,6 +105,8 @@ void MainWindow::updateVehicleIdComboBox()
                                     QVariant::fromValue(vehicleConnection));
 
     ui->vehicleIdCombo->setCurrentIndex(ui->vehicleIdCombo->findText(currentVehicleId) < 0 ? 0 : ui->vehicleIdCombo->findText(currentVehicleId));
+
+    ui->flyUI->updateFollowVehicleIdComboBox(mMavsdkStation->getVehicleConnectionList());
 }
 
 void MainWindow::updateUiForCurrentVehicleIdComboBoxIndex(int index) {
@@ -120,6 +125,7 @@ void MainWindow::updateUiForCurrentVehicleIdComboBoxIndex(int index) {
 //            ui->mapWidget->setFollowObjectState(systemId);
     } else { // not rover -> drone
         ui->flyUI->setCurrentVehicleConnection(vehicleConnection);
+        ui->flyUI->updateFollowVehicleIdComboBox(mMavsdkStation->getVehicleConnectionList());
         ui->flyTab->setDisabled(false);
         ui->driveTab->setDisabled(true);
         ui->traceUI->setCurrentTraceVehicle(vehicleConnection->getVehicleState());
