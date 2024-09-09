@@ -32,6 +32,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
     ui->mapWidget->addMapModule(ui->flyUI->getGotoClickOnMapModule());
     ui->mapWidget->addMapModule(ui->cameraGimbalUI->getSetRoiByClickOnMapModule());
+    ui->mapWidget->setTileServerUrl("http://c.osm.rrze.fau.de/osmhd"); // Also https
+    // ui->mapWidget->setTileServerUrl("http://127.0.0.1:8080"); // with a local tile server for simulator use case
     ui->driveTab->setDisabled(true);
     ui->flyTab->setDisabled(true);
 

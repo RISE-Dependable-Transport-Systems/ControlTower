@@ -92,6 +92,10 @@ add_executable(ControlTower
     WayWise/vehicles/copterstate.h
     WayWise/vehicles/carstate.cpp
     WayWise/vehicles/carstate.h
+    WayWise/vehicles/truckstate.cpp
+    WayWise/vehicles/truckstate.h
+    WayWise/vehicles/trailerstate.cpp
+    WayWise/vehicles/trailerstate.h
     WayWise/autopilot/waypointfollower.h
     WayWise/autopilot/gotowaypointfollower.cpp
     WayWise/autopilot/gotowaypointfollower.h
