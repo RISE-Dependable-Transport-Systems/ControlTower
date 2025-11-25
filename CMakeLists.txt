@@ -70,6 +70,8 @@ add_executable(ControlTower
     WayWise/userinterface/routegeneratorzigzagui.ui
     WayWise/routeplanning/zigzagroutegenerator.cpp
     WayWise/routeplanning/zigzagroutegenerator.h
+    WayWise/routeplanning/routeutils.cpp
+    WayWise/routeplanning/routeutils.h
     WayWise/userinterface/map/routeplannermodule.cpp
     WayWise/userinterface/map/routeplannermodule.h
     WayWise/userinterface/map/tracemodule.cpp
