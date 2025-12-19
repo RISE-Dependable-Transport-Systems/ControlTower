@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     // ui->mapWidget->setTileServerUrl("http://127.0.0.1:8080"); // with a local tile server for simulator use case
     ui->driveTab->setDisabled(true);
     ui->flyTab->setDisabled(true);
+    ui->mapWidget->setEnuRef(llh_t{57.7171924432987, 12.962759215969157, 0.0});
 
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
