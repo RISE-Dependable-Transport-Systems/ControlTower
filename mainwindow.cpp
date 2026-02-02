@@ -3,6 +3,8 @@
 #include <QSerialPort>
 #include <QThread>
 #include <QStyleFactory>
+#include <QSettings>
+#include <QCloseEvent>
 #include "core/pospoint.h"
 #include "vehicles/copterstate.h"
 #include "WayWise/logger/logger.h"
@@ -22,6 +24,14 @@ MainWindow::MainWindow(QWidget *parent)
     qRegisterMetaType<PosType>("PosType");
 
     ui->setupUi(this);
+    // Restore window geometry and state from previous session
+    {
+        QSettings settings("WayWise", "ControlTower");
+        if (settings.contains("mainwindow/geometry"))
+            restoreGeometry(settings.value("mainwindow/geometry").toByteArray());
+        if (settings.contains("mainwindow/state"))
+            restoreState(settings.value("mainwindow/state").toByteArray());
+    }
     ui->logBrowser->hide();
 
     this->setFocusPolicy(Qt::StrongFocus);
@@ -142,6 +152,14 @@ MainWindow::~MainWindow()
     // Allow MAVSDK to finish
     thread()->msleep(100);
     delete ui;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    QSettings settings("WayWise", "ControlTower");
+    settings.setValue("mainwindow/geometry", saveGeometry());
+    settings.setValue("mainwindow/state", saveState());
+    QMainWindow::closeEvent(event);
 }
 
 void MainWindow::updateVehicleIdComboBoxes()
