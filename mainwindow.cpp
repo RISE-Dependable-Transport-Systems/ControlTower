@@ -18,6 +18,9 @@ MainWindow::MainWindow(QWidget *parent)
     Logger::initGroundStation();
     ParameterServer::initialize();
 
+    // Ensure PosType can be used in queued signal/slot connections
+    qRegisterMetaType<PosType>("PosType");
+
     ui->setupUi(this);
     ui->logBrowser->hide();
 
@@ -26,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(&Logger::getInstance(), &Logger::logSent, this, &MainWindow::on_logSent);
 
-    ui->mapWidget->setScaleFactor(0.05);
+    ui->mapWidget->setScaleFactor(0.01);
     ui->mapWidget->setSelectedObjectState(0);
     ui->mapWidget->addMapModule(ui->planUI->getRoutePlannerModule());
     ui->mapWidget->addMapModule(ui->traceUI->getTraceModule());
@@ -58,6 +61,50 @@ MainWindow::MainWindow(QWidget *parent)
         vehicleConnection->setEnuReference(ui->mapWidget->getEnuRef());
 //        ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
 
+        // Use a shared pointer to track if we've already attempted a download for this vehicle
+        auto downloadAttempted = QSharedPointer<bool>::create(false);
+        connect(vehicleConnection->getVehicleState().get(), &ObjectState::positionUpdated, this, [this, vehicleConnection, downloadAttempted](PosType type){
+            // Accept both simulated and fused position updates
+            if (type != PosType::fused && type != PosType::simulated)
+                return;
+
+            // Only attempt once per vehicle connection
+            if (*downloadAttempted)
+                return;
+
+            // Only attempt if map/plan has no current route
+            auto routePlanner = ui->planUI->getRoutePlannerModule();
+            if (!routePlanner)
+                return;
+
+            if (!routePlanner->getCurrentRoute().isEmpty())
+                return; // already have a route on the map
+
+            // Check if vehicle is moving (indicates it's following a route)
+            double speed = vehicleConnection->getVehicleState()->getSpeed();
+            const double minSpeedForAutoDownload = 0.5; // m/s - increased threshold to avoid false triggers
+            if (speed <= minSpeedForAutoDownload)
+                return;
+
+            // Mark that we've attempted download to prevent repeated attempts
+            *downloadAttempted = true;
+
+            // Switch to plan tab so user can see the download
+            if (ui->tabWidget && ui->planTab) {
+                ui->tabWidget->setCurrentWidget(ui->planTab);
+                
+                // Enhance UX: Zoom in and follow the vehicle
+                if (ui->mapWidget) {
+                    ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
+                    ui->mapWidget->setScaleFactor(0.01); // Zoom in for better view
+                }
+            }
+
+            QList<PosPoint> currentRouteOnVehicle = vehicleConnection->requestCurrentRouteFromVehicle();
+            if (currentRouteOnVehicle.size()) {
+                routePlanner->addRoute(currentRouteOnVehicle);
+            }
+        });
         updateVehicleIdComboBoxes();
     });
 
