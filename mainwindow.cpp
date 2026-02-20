@@ -51,6 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->driveTab->setDisabled(true);
     ui->flyTab->setDisabled(true);
 
+    // Make the right panel collapsible in the splitter and collapse it by default
+    ui->splitter->setCollapsible(1, true);
+    ui->splitter->setSizes({1, 0});
+
     mMavsdkStation = QSharedPointer<MavsdkStation>::create();
     connect(mMavsdkStation.get(), &MavsdkStation::gotNewVehicleConnection, [&](QSharedPointer<MavsdkVehicleConnection> vehicleConnection){
         // LASH FIRE use case: we are a moving base and only communicate llh to/from drone
@@ -102,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent)
             // Switch to plan tab so user can see the download
             if (ui->tabWidget && ui->planTab) {
                 ui->tabWidget->setCurrentWidget(ui->planTab);
-                
+
                 // Enhance UX: Zoom in and follow the vehicle
                 if (ui->mapWidget) {
                     ui->mapWidget->setFollowObjectState(vehicleConnection->getVehicleState()->getId());
