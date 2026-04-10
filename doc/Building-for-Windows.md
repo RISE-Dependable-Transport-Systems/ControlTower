@@ -60,7 +60,7 @@ Now cmake should run successfully. Then you are ready to build and install MAVSD
 ## Build ControlTower using MXE
 
     cd ~/src
-    git clone --recursive git@github.com:RISE-Dependable-Transport-Systems/ControlTower.git
+    git clone --recursive git@github.com:das-rise/ControlTower.git
     mkdir -p ControlTower/win_build
     cd ControlTower/win_build
 
